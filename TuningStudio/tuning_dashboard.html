@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALCYE CAR · Garagem Virtual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        racing: ['"Chakra Petch"', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    colors: {
+                        glass: 'rgba(15, 23, 42, 0.65)',
+                        glassBorder: 'rgba(148, 163, 184, 0.15)',
+                        neonBlue: '#38bdf8',
+                        neonAmber: '#f59e0b'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+        }
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid theme('colors.glassBorder');
+        }
+        .glass-input {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid theme('colors.slate.700');
+            transition: all 0.2s;
+        }
+        .glass-input:focus {
+            border-color: theme('colors.sky.500');
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+            outline: none;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #dashboardView { background: radial-gradient(ellipse at 75% 0%, rgba(14,165,233,.08), transparent 45%); }
+        #dashboardView aside { background: rgba(7,13,25,.88); backdrop-filter: blur(20px); }
+        .project-card { box-shadow: 0 18px 50px rgba(0,0,0,.25); transition: transform .25s,border-color .25s,box-shadow .25s; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 24px 60px rgba(14,165,233,.12); }
+        .project-art { background: radial-gradient(ellipse at 72% 60%,rgba(14,165,233,.25),transparent 35%),linear-gradient(135deg,#0b1423,#101d31 55%,#07101c); }
+        .garage-glow { text-shadow: 0 0 30px rgba(56,189,248,.18); }
+        body::after { content:'ALCYE CAR'; position:fixed; inset:0; z-index:99999; display:grid; place-items:center; background:radial-gradient(ellipse at center,rgba(14,165,233,.14),transparent 45%),#050a12; color:#e2e8f0; font:700 1.15rem 'Chakra Petch',sans-serif; letter-spacing:.22em; opacity:0; transition:opacity .38s ease; pointer-events:none; }
+        html.page-leaving body::after, html.page-entering body::after { opacity:1; }
+        @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+        @media(max-width:767px) {
+            body { overflow:auto; min-height:100vh; height:auto; }
+            #dashboardView { position:fixed; overflow:auto; }
+            #dashboardView aside { min-height:auto; }
+            #dashboardView nav { display:flex; gap:.5rem; }
+            #dashboardView nav > * { flex:1; justify-content:center; padding:.65rem .5rem; margin-top:0; }
+        }
+    </style>
+    <script>
+        (() => {
+            const root = document.documentElement;
+            try { if (sessionStorage.getItem('tuning-page-transition') === '1') { root.classList.add('page-entering'); sessionStorage.removeItem('tuning-page-transition'); document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('page-entering'))), { once: true }); } } catch (_) {}
+            document.addEventListener('click', (event) => {
+                const link = event.target.closest('a[href]');
+                if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target || link.hasAttribute('download')) return;
+                const target = new URL(link.href, location.href);
+                if (target.origin !== location.origin || !/\.html$/i.test(target.pathname) || target.href === location.href) return;
+                event.preventDefault(); root.classList.add('page-leaving');
+                try { sessionStorage.setItem('tuning-page-transition', '1'); } catch (_) {}
+                setTimeout(() => location.assign(target.href), 240);
+            });
+        })();
+    </script>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col font-sans antialiased">
+
+    <!-- TELA DE LOGIN -->
+    <div id="loginView" class="absolute inset-0 flex items-center justify-center p-4 z-50 transition-opacity duration-500">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-8 shadow-2xl relative overflow-hidden fade-in">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 via-blue-600 to-sky-400"></div>
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-24 h-24 mb-4">
+                    <img src="logo.png" alt="Logo ALCYE CAR" class="w-24 h-24 object-contain">
+                </div>
+                <h1 class="font-racing font-bold text-2xl uppercase tracking-wider text-white">ALCYE CAR</h1>
+                <p class="text-slate-400 text-sm mt-1">Estúdio de Preparação Virtual</p>
+            </div>
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">E-mail</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-envelope text-slate-500 text-sm"></i>
+                        </div>
+                        <input id="loginEmail" name="email" type="email" required autocomplete="email" placeholder="seu@email.com" class="glass-input w-full pl-10 pr-4 py-3 rounded-xl text-sm text-slate-200 placeholder-slate-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">Senha</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-slate-500 text-sm"></i>
+                        </div>
+                        <input id="loginPassword" name="password" type="password" required autocomplete="current-password" placeholder="Sua senha" class="glass-input w-full pl-10 pr-4 py-3 rounded-xl text-sm text-slate-200 placeholder-slate-600">
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-4 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white font-racing font-bold text-lg py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(14,165,233,0.3)] flex items-center justify-center gap-2">
+                    ENTRAR <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+            </form>
+            <div id="loginLinks" class="flex justify-between gap-3 mt-4 text-sm">
+                <button id="showRegister" type="button" class="text-sky-300 hover:text-sky-200">Criar conta</button>
+                <button id="showForgot" type="button" class="text-slate-400 hover:text-slate-200">Esqueci minha senha</button>
+            </div>
+            <form id="registerForm" class="space-y-4 hidden">
+                <div><label for="registerName" class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">Nome</label><input id="registerName" required maxlength="80" autocomplete="name" class="glass-input w-full px-4 py-3 rounded-xl text-sm text-slate-200" placeholder="Seu nome"></div>
+                <div><label for="registerEmail" class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">E-mail</label><input id="registerEmail" type="email" required maxlength="254" autocomplete="email" class="glass-input w-full px-4 py-3 rounded-xl text-sm text-slate-200" placeholder="seu@email.com"></div>
+                <div><label for="registerPassword" class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">Senha (mínimo 12 caracteres)</label><input id="registerPassword" type="password" required minlength="12" maxlength="128" autocomplete="new-password" class="glass-input w-full px-4 py-3 rounded-xl text-sm text-slate-200" placeholder="Crie uma senha forte"></div>
+                <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-blue-700 text-white font-racing font-bold text-lg py-3 rounded-xl">CRIAR CONTA</button>
+                <button id="backToLoginFromRegister" type="button" class="w-full text-sm text-slate-400 hover:text-white">Voltar para entrar</button>
+            </form>
+            <form id="forgotForm" class="space-y-4 hidden">
+                <p class="text-sm text-slate-400">Informe seu e-mail. Se houver uma conta, enviaremos um link de redefinição válido por 30 minutos.</p>
+                <div><label for="forgotEmail" class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">E-mail</label><input id="forgotEmail" type="email" required maxlength="254" autocomplete="email" class="glass-input w-full px-4 py-3 rounded-xl text-sm text-slate-200" placeholder="seu@email.com"></div>
+                <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-blue-700 text-white font-racing font-bold text-lg py-3 rounded-xl">ENVIAR LINK</button>
+                <button id="backToLoginFromForgot" type="button" class="w-full text-sm text-slate-400 hover:text-white">Voltar para entrar</button>
+            </form>
+            <form id="resetForm" class="space-y-4 hidden">
+                <p class="text-sm text-slate-400">Escolha uma nova senha com pelo menos 12 caracteres.</p>
+                <div><label for="resetPassword" class="block text-xs font-racing font-semibold text-sky-400 uppercase tracking-widest mb-1.5 ml-1">Nova senha</label><input id="resetPassword" type="password" required minlength="12" maxlength="128" autocomplete="new-password" class="glass-input w-full px-4 py-3 rounded-xl text-sm text-slate-200" placeholder="Nova senha"></div>
+                <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-blue-700 text-white font-racing font-bold text-lg py-3 rounded-xl">REDEFINIR SENHA</button>
+            </form>
+            <p id="authMessage" role="alert" class="text-sm text-rose-300 text-center mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PRINCIPAL -->
+    <div id="dashboardView" class="hidden absolute inset-0 flex-col md:flex-row z-40 opacity-0 transition-opacity duration-500 h-full">
+        <aside class="glass-panel w-full md:w-64 md:h-full flex flex-col border-r border-slate-700/50 shrink-0 z-20">
+            <div class="p-5 flex items-center gap-3 border-b border-slate-700/50">
+                <div class="w-14 h-14 flex items-center justify-center shrink-0">
+                    <img src="logo.png" alt="Logo ALCYE CAR" class="w-14 h-14 object-contain">
+                </div>
+                <div>
+                    <div class="font-racing font-bold text-sm leading-tight text-white uppercase">ALCYE CAR</div>
+                    <div class="text-[10px] text-sky-400 uppercase tracking-widest">Garagem Virtual</div>
+                </div>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <a href="index_fixed.html" class="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-sky-500/20 to-blue-600/10 border border-sky-500/30 text-sky-300 rounded-xl font-racing font-medium text-sm transition-all hover:border-sky-400/70">
+                    <i class="fa-solid fa-car-side w-5 text-center"></i> Meus Projetos
+                </a>
+                <!-- BOTÃO DE CONEXÃO COM O FÓRUM DE PEÇAS -->
+                <a href="gemini-code-1792015511920.html" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/50 text-slate-300 rounded-xl font-racing font-medium text-sm transition-all border border-transparent hover:border-slate-700/50">
+                    <i class="fa-solid fa-box-open w-5 text-center text-sky-400"></i> Fórum de Peças
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-700/50">
+                <button id="logoutBtn" class="w-full flex items-center justify-between px-4 py-2 hover:bg-red-500/10 text-slate-400 hover:text-red-400 rounded-lg transition-colors text-sm font-medium border border-transparent hover:border-red-500/30">
+                    <span><i class="fa-solid fa-right-from-bracket mr-2"></i>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            <div class="flex-1 overflow-y-auto p-4 md:p-8">
+                <div class="flex justify-between items-end mb-7 fade-in">
+                    <div>
+                        <div class="text-[11px] font-racing uppercase tracking-[.22em] text-sky-400 mb-2"><i class="fa-solid fa-circle text-[7px] mr-2 animate-pulse"></i>Seu espaço de criação</div>
+                        <h2 class="text-3xl md:text-4xl font-racing font-bold text-white tracking-wide garage-glow">GARAGEM VIRTUAL</h2>
+                        <p class="text-slate-400 text-sm mt-2">Seus projetos, suas escolhas. Prepare o próximo build.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-9 fade-in">
+                    <div class="glass-panel rounded-xl p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-sky-400/10 flex items-center justify-center text-sky-300"><i class="fa-solid fa-layer-group"></i></div><div><div class="text-xl font-racing font-bold text-white">01</div><div class="text-xs text-slate-400">Projeto disponível</div></div></div>
+                    <div class="glass-panel rounded-xl p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-emerald-400/10 flex items-center justify-center text-emerald-300"><i class="fa-solid fa-cube"></i></div><div><div class="text-xl font-racing font-bold text-white">3D</div><div class="text-xs text-slate-400">Configuração em tempo real</div></div></div>
+                    <div class="glass-panel rounded-xl p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-300"><i class="fa-solid fa-sliders"></i></div><div><div class="text-xl font-racing font-bold text-white">Livre</div><div class="text-xs text-slate-400">Monte do seu jeito</div></div></div>
+                </div>
+
+                <div class="mb-10 fade-in">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-car text-sky-400"></i>
+                        <h3 class="font-racing font-semibold text-lg text-slate-200 uppercase tracking-wider">Projetos Disponíveis</h3>
+                        <div class="h-px flex-1 bg-gradient-to-r from-slate-700 to-transparent ml-4"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        <!-- CARD DO GOL QUADRADO - LIGA DIRETAMENTE COM O index_fixed.html -->
+                        <a href="index_fixed.html" aria-label="Abrir oficina 3D do Gol Quadrado" class="project-card glass-panel rounded-2xl overflow-hidden group hover:border-sky-500/50 cursor-pointer flex flex-col h-full no-underline">
+                            <div class="project-art h-52 relative overflow-hidden flex items-end p-6">
+                                <div class="absolute inset-0 opacity-20" style="background-image:linear-gradient(rgba(56,189,248,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.15) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(transparent,#000)"></div>
+                                <div class="relative z-10"><div class="font-racing text-[10px] tracking-[.3em] text-sky-300 uppercase">Projeto 001 · 1994</div><div class="font-racing font-bold text-3xl md:text-4xl text-white mt-1">GOL <span class="text-sky-400">G1</span></div><div class="text-xs text-slate-300 mt-1">1.8 AP · Street build</div></div>
+                                <i class="fa-solid fa-car-side absolute right-5 bottom-7 text-[5.5rem] text-sky-300/20 group-hover:text-sky-300/35 group-hover:scale-110 transition-all duration-300"></i>
+                                <div class="absolute top-3 right-3 bg-emerald-500/25 border border-emerald-500/50 text-emerald-400 text-[10px] font-racing font-bold px-2.5 py-1 rounded uppercase tracking-wider backdrop-blur-sm">
+                                    Oficina 3D Pronta
+                                </div>
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col">
+                                <h4 class="font-racing font-bold text-xl text-white mb-1">Gol Quadrado AP (Estúdio 3D)</h4>
+                                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Acesse o estúdio interativo, ajuste suspensão, motor AP, turbina, rodas e pintura em tempo real.</p>
+                                <div class="mt-auto pt-3 border-t border-slate-700/50 flex justify-between items-center">
+                                    <span class="text-xs text-sky-400 font-racing font-semibold"><i class="fa-solid fa-cube mr-1"></i> Abrir Oficina 3D</span>
+                                    <i class="fa-solid fa-arrow-right text-sky-400"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const authForms = ['loginForm', 'registerForm', 'forgotForm', 'resetForm'];
+        const authMessage = document.getElementById('authMessage');
+        function showAuthForm(formId) {
+            authForms.forEach(id => document.getElementById(id).classList.toggle('hidden', id !== formId));
+            document.getElementById('loginLinks').classList.toggle('hidden', formId !== 'loginForm');
+            authMessage.classList.add('hidden');
+        }
+        async function authRequest(path, payload) {
+            const response = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(payload) });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Não foi possível concluir a solicitação.');
+            return data;
+        }
+        function showAuthMessage(message, success = false) {
+            authMessage.textContent = message;
+            authMessage.classList.toggle('text-emerald-300', success);
+            authMessage.classList.toggle('text-rose-300', !success);
+            authMessage.classList.remove('hidden');
+        }
+        document.getElementById('showRegister').onclick = () => showAuthForm('registerForm');
+        document.getElementById('showForgot').onclick = () => { document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value; showAuthForm('forgotForm'); };
+        document.getElementById('backToLoginFromRegister').onclick = () => showAuthForm('loginForm');
+        document.getElementById('backToLoginFromForgot').onclick = () => showAuthForm('loginForm');
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await authRequest('/api/auth/register', { displayName: document.getElementById('registerName').value, email: document.getElementById('registerEmail').value, password: document.getElementById('registerPassword').value });
+                await showDashboard();
+            } catch (error) { showAuthMessage(error instanceof TypeError ? 'Não consegui conectar ao servidor da API.' : error.message); }
+        });
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const result = await authRequest('/api/auth/forgot-password', { email: document.getElementById('forgotEmail').value });
+                showAuthMessage(result.message, true);
+            } catch (error) { showAuthMessage(error instanceof TypeError ? 'Não consegui conectar ao servidor da API.' : error.message); }
+        });
+        const resetToken = new URLSearchParams(location.search).get('token');
+        if (resetToken) showAuthForm('resetForm');
+        document.getElementById('resetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const result = await authRequest('/api/auth/reset-password', { token: resetToken, password: document.getElementById('resetPassword').value });
+                history.replaceState(null, '', location.pathname);
+                showAuthForm('loginForm');
+                showAuthMessage(result.message, true);
+            } catch (error) { showAuthMessage(error instanceof TypeError ? 'Não consegui conectar ao servidor da API.' : error.message); }
+        });
+        async function showDashboard() {
+            document.getElementById('loginView').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loginView').classList.add('hidden');
+                const dash = document.getElementById('dashboardView');
+                dash.classList.remove('hidden'); dash.classList.add('flex');
+                setTimeout(() => dash.style.opacity = '1', 50);
+            }, 400);
+        }
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await authRequest('/api/auth/login', { email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value });
+                await showDashboard();
+            } catch (error) {
+                showAuthMessage(error instanceof TypeError ? 'Não consegui conectar ao servidor. Abra o app pelo endereço da API, não pelo arquivo HTML.' : error.message);
+            }
+        });
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+            const dash = document.getElementById('dashboardView');
+            dash.style.opacity = '0';
+            setTimeout(() => {
+                dash.classList.add('hidden'); dash.classList.remove('flex');
+                const log = document.getElementById('loginView');
+                log.classList.remove('hidden');
+                setTimeout(() => log.style.opacity = '1', 50);
+            }, 400);
+        });
+        fetch('/api/auth/me', { credentials: 'same-origin' }).then(response => { if (response.ok) showDashboard(); }).catch(() => {});
+    </script>
+</body>
+</html>

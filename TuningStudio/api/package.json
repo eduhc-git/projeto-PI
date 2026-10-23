@@ -1,0 +1,19 @@
+{
+  "name": "tuningstudio-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "cookie-parser": "^1.4.7",
+    "nodemailer": "^7.0.5",
+    "pg": "^8.16.3"
+  }
+}

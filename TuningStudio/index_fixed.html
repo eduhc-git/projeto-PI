@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ALCYE CAR · Gol Quadrado 1.8 AP</title>
+<meta name="description" content="Estúdio 3D de preparação do VW Gol Quadrado G1 1.8 AP — peças, dinamômetro, pintura, importação de modelos .DFF/.TXD/.GLB/.OBJ e busca no Sketchfab.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Reflector.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+tailwind.config = { theme: { extend: { fontFamily: { racing: ['"Chakra Petch"', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] } } } };
+</script>
+<style>
+:root{--glass:rgba(15,23,42,.62);--glass2:rgba(30,41,59,.55);--line:rgba(148,163,184,.18);--accent:#38bdf8;--accent2:#eab308;--danger:#ef4444;--ok:#22c55e}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#05070b;color:#e2e8f0;font-family:Inter,system-ui,sans-serif}
+#c3d{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
+.font-racing{font-family:"Chakra Petch",sans-serif}
+.glass{background:var(--glass);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+.glass-soft{background:var(--glass2);border:1px solid var(--line);border-radius:12px}
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.48rem .8rem;border-radius:10px;border:1px solid var(--line);background:rgba(30,41,59,.65);color:#e2e8f0;font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:rgba(56,189,248,.55);background:rgba(14,116,144,.35)}
+.btn.active{background:linear-gradient(135deg,rgba(14,165,233,.55),rgba(37,99,235,.45));border-color:#38bdf8;box-shadow:0 0 18px rgba(56,189,248,.25)}
+.btn.warn{border-color:rgba(234,179,8,.5)}
+.btn.danger{border-color:rgba(239,68,68,.45)}
+.btn.danger:hover{background:rgba(127,29,29,.5)}
+.btn.primary{background:linear-gradient(135deg,#0ea5e9,#2563eb);border-color:#38bdf8}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.icon-btn{width:38px;height:38px;justify-content:center;padding:0}
+.tab{padding:.45rem .65rem;font-family:"Chakra Petch";font-weight:600;font-size:12.5px;color:#94a3b8;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.active{color:#e0f2fe;border-color:#38bdf8}
+.part{display:flex;gap:.6rem;align-items:center;padding:.6rem .7rem;border-radius:12px;border:1px solid var(--line);background:rgba(15,23,42,.45);cursor:pointer;transition:all .15s;margin-bottom:.45rem}
+.part:hover{border-color:rgba(56,189,248,.45)}
+.part.on{border-color:#38bdf8;background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(37,99,235,.12))}
+.part .chk{width:20px;height:20px;border-radius:6px;border:1.5px solid #475569;display:flex;align-items:center;justify-content:center;flex:none;font-size:11px}
+.part.on .chk{background:#0ea5e9;border-color:#38bdf8;color:#fff}
+.part .nm{font-weight:600;font-size:13.5px;line-height:1.2}
+.part .ds{font-size:11.5px;color:#94a3b8;margin-top:2px;line-height:1.3}
+.part .pr{margin-left:auto;text-align:right;font-family:"Chakra Petch";font-size:12.5px;white-space:nowrap}
+.part .gain{color:#4ade80;font-size:11.5px}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7dd3fc;font-family:"Chakra Petch";font-weight:600}
+.big{font-family:"Chakra Petch";font-weight:700;font-size:34px;line-height:1;text-shadow:0 0 18px rgba(56,189,248,.35)}
+.scroll{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#334155 transparent}
+.scroll::-webkit-scrollbar{width:6px}.scroll::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+.alert{border-radius:10px;padding:.55rem .7rem;font-size:12.5px;line-height:1.35;border:1px solid rgba(239,68,68,.5);background:rgba(127,29,29,.45);color:#fecaca;display:flex;gap:.5rem}
+.alert.info{border-color:rgba(34,197,94,.45);background:rgba(20,83,45,.4);color:#bbf7d0}
+.swatch{width:26px;height:26px;border-radius:8px;border:2px solid rgba(255,255,255,.12);cursor:pointer;flex:none}
+.swatch.sel{border-color:#fff;box-shadow:0 0 0 2px #38bdf8}
+input[type=range]{accent-color:#38bdf8;width:100%}
+input[type=text],input[type=password],input[type=search],select{background:rgba(2,6,23,.7);border:1px solid var(--line);border-radius:10px;color:#e2e8f0;padding:.5rem .7rem;font-size:13.5px;outline:none;width:100%}
+input:focus,select:focus{border-color:#38bdf8}
+.modal-bg{position:fixed;inset:0;background:rgba(2,6,23,.66);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}
+.modal-bg.show{display:flex}
+.modal{width:min(980px,100%);max-height:92vh;display:flex;flex-direction:column}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast > div{pointer-events:auto;padding:.6rem 1rem;font-size:13.5px;border-radius:12px;max-width:92vw}
+#drop{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(2,132,199,.18);border:3px dashed #38bdf8;backdrop-filter:blur(3px)}
+#drop.show{display:flex}
+#busy{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.55)}
+#busy.show{display:flex}
+.gauge-bar{height:7px;border-radius:6px;background:rgba(51,65,85,.6);overflow:hidden}
+.gauge-bar > i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.sf-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(15,23,42,.6);display:flex;flex-direction:column}
+.sf-card img{width:100%;aspect-ratio:16/10;object-fit:cover;background:#0f172a}
+.kbd{font-family:"Chakra Petch";font-size:11px;padding:1px 6px;border:1px solid #475569;border-radius:5px;color:#cbd5e1}
+#panelLeft{position:fixed;left:14px;top:76px;bottom:14px;width:360px;z-index:20;display:flex;flex-direction:column}
+#panelRight{position:fixed;right:14px;top:76px;width:330px;max-height:calc(100% - 90px);z-index:20;display:flex;flex-direction:column}
+#topbar{position:fixed;left:14px;right:14px;top:12px;height:54px;z-index:30;display:flex;align-items:center;gap:10px;padding:0 10px}
+#camBar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:25;display:flex;gap:6px;padding:7px}
+#rpmHud{position:fixed;left:390px;bottom:18px;z-index:22;padding:8px 12px;min-width:170px}
+.mob-only{display:none}
+@media (max-width:1100px){#panelRight{width:300px}#panelLeft{width:320px}#rpmHud{left:350px}}
+@media (max-width:860px){
+  .mob-only{display:inline-flex}.desk-only{display:none!important}
+  #panelLeft,#panelRight{left:8px;right:8px;width:auto;top:auto;bottom:70px;max-height:52vh;display:none}
+  #panelLeft.mob-show,#panelRight.mob-show{display:flex}
+  #topbar{left:8px;right:8px;top:8px;height:50px;gap:6px}
+  #camBar{bottom:10px;max-width:calc(100% - 16px);overflow-x:auto}
+  #rpmHud{left:8px;bottom:auto;top:66px;min-width:0}
+}
+</style>
+<style>
+body::after{content:'ALCYE CAR';position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:radial-gradient(ellipse at center,rgba(14,165,233,.14),transparent 45%),#050a12;color:#e2e8f0;font:700 1.15rem 'Chakra Petch',sans-serif;letter-spacing:.22em;opacity:0;transition:opacity .38s ease;pointer-events:none}
+html.page-leaving body::after,html.page-entering body::after{opacity:1}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<script>
+(()=>{const root=document.documentElement;try{if(sessionStorage.getItem('tuning-page-transition')==='1'){root.classList.add('page-entering');sessionStorage.removeItem('tuning-page-transition');document.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>root.classList.remove('page-entering'))),{once:true})}}catch(_){}document.addEventListener('click',event=>{const link=event.target.closest('a[href]');if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||link.target||link.hasAttribute('download'))return;const target=new URL(link.href,location.href);if(target.origin!==location.origin||!/\.html$/i.test(target.pathname)||target.href===location.href)return;event.preventDefault();root.classList.add('page-leaving');try{sessionStorage.setItem('tuning-page-transition','1')}catch(_){}setTimeout(()=>location.assign(target.href),240)})})();
+</script>
+</head>
+<body>
+<canvas id="c3d" tabindex="0"></canvas>
+
+<!-- BARRA SUPERIOR -->
+<header id="topbar" class="glass">
+  <div class="flex items-center gap-3 min-w-0">
+    <div class="w-14 h-14 flex items-center justify-center flex-none"><img src="logo.png" alt="Logo ALCYE CAR" class="w-14 h-14 object-contain"></div>
+    <div class="min-w-0">
+      <div class="font-racing font-bold text-[15px] leading-tight truncate">GOL QUADRADO <span class="text-sky-400">1.8 AP</span></div>
+      <div class="text-[11px] text-slate-400 leading-tight truncate desk-only">ALCYE CAR · VW G1 1994</div>
+    </div>
+  </div>
+  <div class="flex-1"></div>
+  <a href="tuning_dashboard.html" class="btn" title="Voltar para a garagem" aria-label="Voltar para a garagem"><i class="fa-solid fa-arrow-left"></i><span class="desk-only">Garagem</span></a>
+  <span id="modelBadge" class="desk-only text-[12px] px-2 py-1 rounded-md glass-soft text-slate-300 truncate max-w-[220px]"><i class="fa-solid fa-car-side mr-1 text-sky-400"></i>Gol procedural</span>
+  <button class="btn" id="btnModels" title="Importar / buscar modelos 3D"><i class="fa-solid fa-cube"></i><span class="desk-only">Modelos 3D</span></button>
+  <button class="btn" id="btnProjects" title="Projetos salvos"><i class="fa-solid fa-floppy-disk"></i><span class="desk-only">Projetos</span></button>
+  <button class="btn warn" id="btnChecklist" title="Checklist e orçamento"><i class="fa-solid fa-clipboard-list"></i><span class="desk-only">Checklist</span></button>
+  <button class="btn icon-btn" id="btnSettings" title="Configurações"><i class="fa-solid fa-gear"></i></button>
+</header>
+
+<!-- PAINEL ESQUERDO: PEÇAS -->
+<aside id="panelLeft" class="glass">
+  <div class="px-4 pt-3 pb-1 flex items-center justify-between">
+    <div class="lbl"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> Preparação</div>
+    <button class="btn icon-btn mob-only" data-close-panel="panelLeft" style="width:30px;height:30px"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <nav class="flex gap-1 px-3 overflow-x-auto border-b border-slate-700/50" id="tabs">
+    <div class="tab active" data-tab="engine"><i class="fa-solid fa-gears mr-1"></i>Motor</div>
+    <div class="tab" data-tab="wheels"><i class="fa-solid fa-circle-dot mr-1"></i>Rodas</div>
+    <div class="tab" data-tab="suspension"><i class="fa-solid fa-arrows-down-to-line mr-1"></i>Suspensão</div>
+    <div class="tab" data-tab="exhaust"><i class="fa-solid fa-wind mr-1"></i>Escape</div>
+    <div class="tab" data-tab="visual"><i class="fa-solid fa-star mr-1"></i>Visual</div>
+    <div class="tab" data-tab="paint"><i class="fa-solid fa-spray-can mr-1"></i>Pintura</div>
+  </nav>
+  <div id="tabBody" class="scroll flex-1 p-3"></div>
+</aside>
+
+<!-- PAINEL DIREITO: DINAMÔMETRO E ORÇAMENTO -->
+<aside id="panelRight" class="glass">
+  <div class="px-4 pt-3 pb-2 flex items-center justify-between">
+    <div class="lbl"><i class="fa-solid fa-chart-line mr-1"></i> Dinamômetro virtual</div>
+    <button class="btn icon-btn mob-only" data-close-panel="panelRight" style="width:30px;height:30px"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="scroll px-4 pb-4 flex-1">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="glass-soft p-3"><div class="text-[11px] text-slate-400 font-racing">POTÊNCIA</div><div class="big"><span id="hpVal">99</span><span class="text-[15px] text-slate-400 ml-1">cv</span></div><div class="gauge-bar mt-2"><i id="hpBar" style="background:linear-gradient(90deg,#0ea5e9,#22d3ee);width:30%"></i></div></div>
+      <div class="glass-soft p-3"><div class="text-[11px] text-slate-400 font-racing">TORQUE</div><div class="big"><span id="tqVal">14.9</span><span class="text-[15px] text-slate-400 ml-1">kgfm</span></div><div class="gauge-bar mt-2"><i id="tqBar" style="background:linear-gradient(90deg,#eab308,#f97316);width:30%"></i></div></div>
+    </div>
+    <canvas id="dynoCanvas" width="600" height="250" class="w-full mt-3 rounded-xl" style="background:rgba(2,6,23,.55);border:1px solid var(--line)"></canvas>
+    <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-racing"><span><i class="fa-solid fa-minus text-sky-400"></i> cv</span><span id="dynoInfo">AP 1.8S · gasolina</span><span><i class="fa-solid fa-minus text-amber-400"></i> kgfm</span></div>
+    <div id="alerts" class="flex flex-col gap-2 mt-3"></div>
+    <div class="lbl mt-4 mb-2"><i class="fa-solid fa-receipt mr-1"></i> Orçamento</div>
+    <div class="glass-soft p-3 text-[13px]">
+      <div class="flex justify-between"><span class="text-slate-400">Subtotal de peças</span><b id="subVal" class="font-racing">R$ 0,00</b></div>
+      <div class="flex justify-between mt-2"><span class="text-slate-400">Mão de obra <b id="laborPct" class="text-sky-300">20%</b></span><b id="laborVal" class="font-racing">R$ 0,00</b></div>
+      <input type="range" id="laborRange" min="15" max="35" step="1" value="20" class="mt-2" aria-label="Taxa de mão de obra">
+      <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-700/60"><span class="font-racing text-slate-300">TOTAL</span><b id="totVal" class="font-racing text-[22px] text-emerald-300">R$ 0,00</b></div>
+    </div>
+    <div class="lbl mt-4 mb-2"><i class="fa-solid fa-sliders mr-1"></i> Oficina</div>
+    <div class="grid grid-cols-2 gap-2">
+      <button class="btn justify-center" id="btnHood"><i class="fa-solid fa-car-burst"></i>Abrir capô</button>
+      <button class="btn justify-center" id="btnLift"><i class="fa-solid fa-arrow-up-from-bracket"></i>Elevar carro</button>
+      <button class="btn justify-center" id="btnIgnition"><i class="fa-solid fa-key"></i>Ligar motor</button>
+      <button class="btn justify-center warn" id="btnRev"><i class="fa-solid fa-fire"></i>Acelerar</button>
+      <button class="btn justify-center" id="btnAuto"><i class="fa-solid fa-rotate"></i>Giro 360°</button>
+      <button class="btn justify-center" id="btnShot"><i class="fa-solid fa-camera"></i>Foto</button>
+    </div>
+  </div>
+</aside>
+
+<!-- HUD RPM -->
+<div id="rpmHud" class="glass">
+  <div class="flex items-center justify-between gap-3"><span class="lbl">RPM</span><span id="rpmVal" class="font-racing font-bold text-[24px]">0</span></div>
+  <div class="gauge-bar mt-1"><i id="rpmBar" style="width:0;background:linear-gradient(90deg,#22c55e,#eab308 70%,#ef4444)"></i></div>
+</div>
+
+<!-- CÂMERAS -->
+<nav id="camBar" class="glass">
+  <button class="btn mob-only" id="mobParts"><i class="fa-solid fa-screwdriver-wrench"></i></button>
+  <button class="btn active" data-cam="general"><i class="fa-solid fa-earth-americas"></i>Geral 360°</button>
+  <button class="btn" data-cam="engine"><i class="fa-solid fa-gears"></i>Cofre AP</button>
+  <button class="btn" data-cam="wheels"><i class="fa-solid fa-circle-dot"></i>Rodas</button>
+  <button class="btn" data-cam="exhaust"><i class="fa-solid fa-wind"></i>Escape</button>
+  <button class="btn mob-only" id="mobDyno"><i class="fa-solid fa-chart-line"></i></button>
+</nav>
+
+<!-- MODAL MODELOS 3D -->
+<div class="modal-bg" id="modalModels">
+  <div class="modal glass">
+    <div class="flex items-center justify-between px-5 pt-4">
+      <div class="font-racing font-bold text-[18px]"><i class="fa-solid fa-cube text-sky-400 mr-2"></i>Modelos 3D</div>
+      <button class="btn icon-btn" data-close><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <nav class="flex gap-1 px-4 mt-2 border-b border-slate-700/50 overflow-x-auto" id="mTabs">
+      <div class="tab active" data-mtab="import"><i class="fa-solid fa-file-import mr-1"></i>Importar arquivos</div>
+      <div class="tab" data-mtab="sketchfab"><i class="fa-solid fa-magnifying-glass mr-1"></i>Buscar no Sketchfab</div>
+      <div class="tab" data-mtab="library"><i class="fa-solid fa-box-archive mr-1"></i>Minha biblioteca</div>
+      <div class="tab" data-mtab="adjust"><i class="fa-solid fa-up-down-left-right mr-1"></i>Ajustar modelo</div>
+    </nav>
+    <div class="scroll p-5 flex-1">
+      <section data-mpane="import">
+        <label for="fileInput" id="dropZone" class="block rounded-2xl border-2 border-dashed border-sky-500/50 p-8 text-center cursor-pointer hover:bg-sky-500/10 transition">
+          <i class="fa-solid fa-cloud-arrow-up text-4xl text-sky-400"></i>
+          <div class="font-racing font-bold text-[17px] mt-2">Arraste os arquivos aqui ou clique para escolher</div>
+          <div class="text-slate-400 text-[13px] mt-1">Sem conversão: <b>.DFF + .TXD</b> (GTA San Andreas), <b>.GLB</b>, <b>.GLTF</b> (+ .bin e texturas), <b>.OBJ + .MTL</b> (+ texturas) ou um <b>.ZIP</b> com tudo dentro.</div>
+          <div class="text-slate-500 text-[12px] mt-2">Dica: selecione vários arquivos de uma vez (ex.: <span class="kbd">gol.dff</span> + <span class="kbd">gol.txd</span>).</div>
+        </label>
+        <input type="file" id="fileInput" multiple class="hidden" accept=".dff,.txd,.glb,.gltf,.bin,.obj,.mtl,.zip,.png,.jpg,.jpeg,.tga,.bmp,.webp">
+        <div class="grid md:grid-cols-3 gap-3 mt-4 text-[12.5px]">
+          <div class="glass-soft p-3"><div class="font-racing font-semibold text-sky-300 mb-1"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Reconhecimento automático</div>capô (<i>bonnet, capo, hood</i>) vira articulado; para-choques (<i>bump_front, bump_rear, bumper</i>); rodas (<i>wheel_rf/lf/rb/lb</i>) e carroceria (<i>chassis, body</i>).</div>
+          <div class="glass-soft p-3"><div class="font-racing font-semibold text-sky-300 mb-1"><i class="fa-solid fa-eye-slash mr-1"></i>Limpeza GTA SA</div>Peças de dano <i>_dam</i> e LODs <i>_vlo / _lo</i> ficam ocultos. A roda única do GTA é clonada para as 4 posições <i>wheel_*_dummy</i>.</div>
+          <div class="glass-soft p-3"><div class="font-racing font-semibold text-sky-300 mb-1"><i class="fa-solid fa-ruler-combined mr-1"></i>Escala e posição</div>O modelo é normalizado para o tamanho real do Gol (3,81 m), centralizado no elevador e pode ser girado na aba <b>Ajustar modelo</b>.</div>
+        </div>
+        <label class="flex items-center gap-2 mt-4 text-[13px] text-slate-300"><input type="checkbox" id="optAutoSave" checked class="accent-sky-500"> Salvar automaticamente os modelos importados na biblioteca</label>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button class="btn" id="btnBackProcedural"><i class="fa-solid fa-car"></i>Voltar ao Gol procedural</button>
+        </div>
+        <div id="importLog" class="mt-3 text-[12px] text-slate-400 font-mono whitespace-pre-wrap"></div>
+      </section>
+      <section data-mpane="sketchfab" class="hidden">
+        <div class="flex gap-2">
+          <input type="search" id="sfQuery" placeholder="Buscar modelos gratuitos (ex.: gol quadrado, santana, opala)…">
+          <button class="btn primary" id="sfSearch"><i class="fa-solid fa-magnifying-glass"></i>Buscar</button>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-3" id="sfShortcuts"></div>
+        <div id="sfTokenWarn" class="alert mt-3 hidden" style="border-color:rgba(234,179,8,.5);background:rgba(113,63,18,.4);color:#fde68a"><i class="fa-solid fa-key mt-[2px]"></i><div>A busca funciona sem conta, mas <b>para carregar</b> um modelo o Sketchfab exige um token gratuito. Crie uma conta em sketchfab.com, copie o <i>API Token</i> em <b>Settings → Password &amp; API</b> e cole em <a href="#" id="sfOpenSettings" class="underline">Configurações</a>.</div></div>
+        <div id="sfStatus" class="text-[13px] text-slate-400 mt-3"></div>
+        <div id="sfGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3"></div>
+        <div class="text-center mt-4"><button class="btn hidden" id="sfMore"><i class="fa-solid fa-angles-down"></i>Carregar mais</button></div>
+      </section>
+      <section data-mpane="library" class="hidden">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="text-[13px] text-slate-400">Modelos guardados <b>neste navegador</b> (IndexedDB). Use <b>Projetos → Exportar</b> para levar a configuração a outro computador.</div>
+          <span id="libUsage" class="text-[12px] text-slate-500"></span>
+        </div>
+        <div id="libList" class="flex flex-col gap-2 mt-3"></div>
+      </section>
+      <section data-mpane="adjust" class="hidden">
+        <div id="adjEmpty" class="text-slate-400 text-[13px]">Nenhum modelo importado ativo. O Gol procedural está em cena.</div>
+        <div id="adjBody" class="hidden">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="glass-soft p-3">
+              <div class="lbl mb-2">Orientação</div>
+              <div class="flex flex-wrap gap-2">
+                <button class="btn" data-adj="rot90"><i class="fa-solid fa-rotate-right"></i>Girar 90°</button>
+                <button class="btn" data-adj="flip"><i class="fa-solid fa-arrows-left-right"></i>Inverter frente</button>
+                <button class="btn" data-adj="upZ"><i class="fa-solid fa-arrow-up"></i>Alternar eixo Z-up</button>
+              </div>
+              <div class="lbl mt-4 mb-1">Escala <span id="adjScaleVal" class="text-slate-300"></span></div>
+              <input type="range" id="adjScale" min="50" max="150" value="100">
+              <label class="flex items-center gap-2 mt-2 text-[13px]"><input type="checkbox" id="adjRealSize" checked class="accent-sky-500">Normalizar para 3,81 m (tamanho real do Gol)</label>
+              <div class="lbl mt-4 mb-1">Altura extra <span id="adjYVal" class="text-slate-300"></span></div>
+              <input type="range" id="adjY" min="-20" max="20" value="0">
+            </div>
+            <div class="glass-soft p-3">
+              <div class="lbl mb-2">Peças reconhecidas</div>
+              <div id="adjParts" class="text-[12.5px] text-slate-300 leading-6"></div>
+              <label class="flex items-center gap-2 mt-3 text-[13px]"><input type="checkbox" id="adjPaintAll" class="accent-sky-500">Pintar todos os materiais da peça (ignorar vidros/pneus só pelo nome)</label>
+            </div>
+          </div>
+          <div class="lbl mt-4 mb-2">Malhas do modelo (clique para mostrar/ocultar)</div>
+          <div id="adjMeshes" class="flex flex-wrap gap-1"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROJETOS -->
+<div class="modal-bg" id="modalProjects">
+  <div class="modal glass" style="width:min(720px,100%)">
+    <div class="flex items-center justify-between px-5 pt-4">
+      <div class="font-racing font-bold text-[18px]"><i class="fa-solid fa-floppy-disk text-sky-400 mr-2"></i>Projetos</div>
+      <button class="btn icon-btn" data-close><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="scroll p-5">
+      <div class="flex gap-2">
+        <input type="text" id="projName" placeholder="Nome do projeto (ex.: Gol GTS turbo de rua)">
+        <button class="btn primary" id="projSave"><i class="fa-solid fa-floppy-disk"></i>Salvar</button>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-3">
+        <button class="btn" id="projExport"><i class="fa-solid fa-file-export"></i>Exportar .json</button>
+        <label class="btn" for="projImportFile"><i class="fa-solid fa-file-import"></i>Importar .json</label>
+        <input type="file" id="projImportFile" accept=".json,application/json" class="hidden">
+        <button class="btn" id="projShare"><i class="fa-solid fa-link"></i>Copiar link compartilhável</button>
+        <button class="btn danger" id="projReset"><i class="fa-solid fa-rotate-left"></i>Configuração de fábrica</button>
+      </div>
+      <div class="text-[12px] text-slate-500 mt-2">Salvamento automático ativo: a última configuração volta sozinha ao abrir o site. Os projetos ficam no seu navegador; para usar em outro computador, exporte o .json (inclui o modelo importado) ou envie o link (só a configuração).</div>
+      <div class="lbl mt-5 mb-2">Projetos salvos</div>
+      <div id="projList" class="flex flex-col gap-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CHECKLIST -->
+<div class="modal-bg" id="modalChecklist">
+  <div class="modal glass" style="width:min(760px,100%)">
+    <div class="flex items-center justify-between px-5 pt-4">
+      <div class="font-racing font-bold text-[18px]"><i class="fa-solid fa-clipboard-check text-amber-400 mr-2"></i>Checklist de preparação</div>
+      <button class="btn icon-btn" data-close><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="scroll p-5" id="checkBody"></div>
+    <div class="flex flex-wrap gap-2 justify-end px-5 pb-4">
+      <button class="btn" data-close>Fechar</button>
+      <button class="btn primary" id="btnExportTxt"><i class="fa-solid fa-file-lines"></i>Exportar orçamento .TXT</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIGURAÇÕES -->
+<div class="modal-bg" id="modalSettings">
+  <div class="modal glass" style="width:min(600px,100%)">
+    <div class="flex items-center justify-between px-5 pt-4">
+      <div class="font-racing font-bold text-[18px]"><i class="fa-solid fa-gear text-sky-400 mr-2"></i>Configurações</div>
+      <button class="btn icon-btn" data-close><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="scroll p-5 text-[13.5px]">
+      <div class="lbl mb-1">Token da API do Sketchfab</div>
+      <div class="flex gap-2"><input type="password" id="setToken" placeholder="Cole aqui o seu API Token (gratuito)" autocomplete="off"><button class="btn" id="setTokenShow" title="Mostrar"><i class="fa-solid fa-eye"></i></button></div>
+      <div class="text-[12px] text-slate-400 mt-1">Pegue em <b>sketchfab.com → Settings → Password &amp; API → API Token</b>. Fica guardado só neste navegador (localStorage).</div>
+      <div class="lbl mt-5 mb-1">Qualidade gráfica</div>
+      <select id="setQuality"><option value="auto">Automática (recomendado)</option><option value="high">Alta — reflexos, sombras e bloom</option><option value="low">Leve — para computadores sem placa de vídeo</option></select>
+      <div class="text-[12px] text-slate-400 mt-1">Alterar a qualidade recarrega a página. Também dá para usar <span class="kbd">?quality=low</span> no endereço.</div>
+      <div class="lbl mt-5 mb-1">Volume do motor</div>
+      <input type="range" id="setVolume" min="0" max="100" value="60">
+      <div class="flex justify-end gap-2 mt-6"><button class="btn primary" id="setSave"><i class="fa-solid fa-check"></i>Salvar</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="drop"><div class="glass px-8 py-6 text-center"><i class="fa-solid fa-file-arrow-down text-4xl text-sky-400"></i><div class="font-racing font-bold text-xl mt-2">Solte para importar o modelo</div><div class="text-slate-400 text-sm">.DFF + .TXD · .GLB · .GLTF · .OBJ + .MTL · .ZIP</div></div></div>
+<div id="busy"><div class="glass px-6 py-5 flex items-center gap-3"><i class="fa-solid fa-circle-notch fa-spin text-sky-400 text-2xl"></i><div><div class="font-racing font-bold" id="busyTitle">Carregando…</div><div class="text-slate-400 text-[12.5px]" id="busyMsg"></div></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* =====================================================================
+   ALCYE CAR · GOL QUADRADO 1.8 AP
+   SPA estática: Three.js r128 + parsers RenderWare (.DFF/.TXD) próprios
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const BRL = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ERRORS = [];
+window.addEventListener('error', e => ERRORS.push(String(e.message || e)));
+window.addEventListener('unhandledrejection', e => ERRORS.push('promise: ' + String(e.reason && e.reason.message || e.reason)));
+
+function toast(msg, type = 'info', ms = 3800) {
+  const d = document.createElement('div');
+  d.className = 'glass';
+  const ic = { info: 'fa-circle-info text-sky-400', ok: 'fa-circle-check text-emerald-400', err: 'fa-triangle-exclamation text-red-400', warn: 'fa-triangle-exclamation text-amber-400' }[type] || 'fa-circle-info';
+  d.innerHTML = `<i class="fa-solid ${ic} mr-2"></i>${msg}`;
+  $('#toast').appendChild(d);
+  setTimeout(() => { d.style.transition = 'opacity .4s'; d.style.opacity = 0; setTimeout(() => d.remove(), 400); }, ms);
+}
+function busy(on, title = 'Carregando…', msg = '') {
+  $('#busy').classList.toggle('show', on); $('#busyTitle').textContent = title; $('#busyMsg').textContent = msg;
+}
+function downloadBlob(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+/* ---------------------------------------------------------------------
+   5. TUNING_DB — dicionário de peças (custos em R$, ganhos em cv/kgfm)
+   --------------------------------------------------------------------- */
+const TUNING_DB = {
+  engine: {
+    title: 'Motor AP 1.8',
+    items: [
+      { id: 'carb_brosol2e', slot: 'fuel', name: 'Carburador Brosol 2E (original)', desc: 'Corpo duplo de fábrica com filtro redondo. Base do AP 1.8S.', cost: 0, hp: 0, tq: 0 },
+      { id: 'weber_40idf', slot: 'fuel', name: 'Weber 40 IDF duplo + cornetas', desc: 'Dois carburadores de corpo duplo com cornetas de admissão cromadas.', cost: 3850, hp: 16, tq: 1.3 },
+      { id: 'fueltech_ft450', slot: 'fuel', name: 'Injeção FuelTech FT450', desc: 'Injeção programável, corpo de borboleta 52 mm, flauta e bicos. Libera o mapa turbo.', cost: 5290, hp: 11, tq: 1.0 },
+      { id: 'turbo_masterpower', toggle: true, name: 'Kit Turbo Master Power .50', desc: 'Turbina .50 pulsativa, coletor de escape, filtro cônico e pressurização. Requer internos forjados acima de 0,8 bar.', cost: 9800, hp: 62, tq: 7.6 },
+      { id: 'samcams_276', toggle: true, name: 'Comando SamCams 276°', desc: 'Comando bravo com polia regulável. Mais giro em alta.', cost: 1650, hp: 14, tq: 0.8 },
+      { id: 'forged_internals', toggle: true, name: 'Pistões e bielas forjados SPA', desc: 'Internos forjados para alta pressão. Destrava setups acima de 1 bar.', cost: 6900, hp: 10, tq: 0.6 },
+      { id: 'strut_bar', toggle: true, name: 'Barra anti-torção superior cromada', desc: 'Liga as torres de suspensão e reduz a torção da carroceria.', cost: 480, hp: 0, tq: 0 }
+    ]
+  },
+  wheels: {
+    title: 'Rodas e freios',
+    items: [
+      { id: 'rim_steel13', slot: 'wheels', name: 'Rodas de aço 13" (original)', desc: 'Aro 13 com calota central. Pneu 175/70 R13.', cost: 0, hp: 0, tq: 0, rim: 13, style: 'steel', tireW: 0.175, tireR: 0.292 },
+      { id: 'rim_pingo14', slot: 'wheels', name: 'Pingo d\'Água 14" (Gol GTS 88-90)', desc: 'A clássica roda de liga do GTS. Pneu 185/60 R14.', cost: 2450, hp: 0, tq: 0, rim: 14, style: 'pingo', tireW: 0.185, tireR: 0.289 },
+      { id: 'rim_orbital15', slot: 'wheels', name: 'Orbital Gomão 15"', desc: 'Orbital de 4 furos com pneu 195/50 R15.', cost: 2950, hp: 0, tq: 0, rim: 15, style: 'orbital', tireW: 0.195, tireR: 0.290 },
+      { id: 'rim_orbital17', slot: 'wheels', name: 'Orbital Gomão 17"', desc: 'Aro 17 com pneu 205/40. Pode raspar no para-lama se rebaixado.', cost: 4300, hp: 0, tq: 0, rim: 17, style: 'orbital', tireW: 0.205, tireR: 0.298 },
+      { id: 'rim_bbsrs17', slot: 'wheels', name: 'BBS RS 17" Euro Look', desc: 'Raiada tripartida com borda polida e parafusos dourados.', cost: 7900, hp: 0, tq: 0, rim: 17, style: 'bbs', tireW: 0.205, tireR: 0.298 }
+    ]
+  },
+  suspension: {
+    title: 'Suspensão',
+    items: [
+      { id: 'susp_standard', slot: 'suspension', name: 'Original de fábrica', desc: 'Altura padrão do Gol 1994.', cost: 0, hp: 0, tq: 0, deltaY: 0 },
+      { id: 'susp_redcoil', slot: 'suspension', name: 'Molas RedCoil esportivas (-40 mm)', desc: 'Rebaixamento leve com conforto.', cost: 890, hp: 0, tq: 0, deltaY: -0.06 },
+      { id: 'susp_fixa', slot: 'suspension', name: 'Suspensão fixa preparada (-70 mm)', desc: 'Molas cortadas + amortecedores encurtados.', cost: 1650, hp: 0, tq: 0, deltaY: -0.11 },
+      { id: 'susp_macaulay', slot: 'suspension', name: 'Rosca Macaulay (-90 mm)', desc: 'Coilover regulável em altura e carga.', cost: 4600, hp: 0, tq: 0, deltaY: -0.13 }
+    ]
+  },
+  exhaust: {
+    title: 'Escapamento',
+    items: [
+      { id: 'exh_original', slot: 'exhaust', name: 'Original silencioso', desc: 'Coletor de ferro fundido e abafador de fábrica.', cost: 0, hp: 0, tq: 0 },
+      { id: 'exh_4x1_carbon', slot: 'exhaust', name: 'Coletor 4x1 aço carbono', desc: 'Coletor dimensionado com tubos pintados em alta temperatura.', cost: 850, hp: 6, tq: 0.4 },
+      { id: 'exh_4x1_inox', slot: 'exhaust', name: 'Coletor 4x1 Inox 304 + ponteira 2,5"', desc: 'Tubos de inox polido e ponteira esportiva de 2,5".', cost: 1980, hp: 9, tq: 0.6 },
+      { id: 'exh_barenwald', slot: 'exhaust', name: 'Escape direto Barenwald', desc: 'Sem abafador: ronco seco e saída lateral de 3".', cost: 1250, hp: 12, tq: 0.7 }
+    ]
+  },
+  visual: {
+    title: 'Visual e acessórios',
+    items: [
+      { id: 'vis_cibie', toggle: true, name: 'Faróis de milha Cibié "Serra Pelada"', desc: 'Par de milhas redondas no para-choque dianteiro.', cost: 690, hp: 0, tq: 0 },
+      { id: 'vis_frisos', toggle: true, name: 'Frisos vermelhos GTS', desc: 'Filete vermelho nos para-choques e laterais.', cost: 190, hp: 0, tq: 0 },
+      { id: 'vis_aerofolio', toggle: true, name: 'Aerofólio de poliuretano GTS', desc: 'Aerofólio traseiro no topo da tampa do porta-malas.', cost: 780, hp: 0, tq: 0 }
+    ]
+  }
+};
+const ITEM = {}; Object.values(TUNING_DB).forEach(c => c.items.forEach(i => ITEM[i.id] = i));
+const BASE_HP = 99, BASE_TQ = 14.9;
+
+/* Paleta inspirada no carcols.dat do GTA SA + cores VW da época */
+const PALETTE = [
+  ['#9f1d20', 'Vermelho Malaga'], ['#c81e1e', 'Vermelho Montecarlo'], ['#f5f5f0', 'Branco Geada'], ['#0b0b0d', 'Preto Universal'],
+  ['#1e3a8a', 'Azul Atlântico'], ['#0e7490', 'Verde Lótus'], ['#14532d', 'Verde Mangue'], ['#a3a3a3', 'Prata Lunar'],
+  ['#525252', 'Cinza Grafite'], ['#facc15', 'Amarelo Ipanema'], ['#ea580c', 'Laranja Cobre'], ['#7c3aed', 'Roxo GTA'],
+  ['#0284c7', 'Azul Grove'], ['#65a30d', 'Verde Grove St.'], ['#78350f', 'Marrom Tabaco'], ['#d4af37', 'Dourado BBS']
+];
+
+const DEFAULT_CONFIG = () => ({
+  v: 1,
+  sel: { fuel: 'carb_brosol2e', wheels: 'rim_steel13', suspension: 'susp_standard', exhaust: 'exh_original' },
+  on: { turbo_masterpower: false, samcams_276: false, forged_internals: false, strut_bar: false, vis_cibie: false, vis_frisos: true, vis_aerofolio: false },
+  colors: { chassis: '#9f1d20', bonnet: '#9f1d20', bumpers: '#16171a', wheels: '#c9ccd1' },
+  labor: 20,
+  model: { type: 'procedural' }
+});
+let CONFIG = DEFAULT_CONFIG();
+
+function isOn(id) {
+  const it = ITEM[id]; if (!it) return false;
+  return it.slot ? CONFIG.sel[it.slot] === id : !!CONFIG.on[id];
+}
+function installedItems() { return Object.values(ITEM).filter(i => isOn(i.id)); }
+
+/* ---------------------------------------------------------------------
+   Qualidade: ?quality=high|low > escolha salva > auto (software → low)
+   --------------------------------------------------------------------- */
+const LS = { get: (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+function detectQuality() {
+  const qp = new URLSearchParams(location.search).get('quality');
+  if (qp === 'high' || qp === 'low') return qp;
+  const saved = LS.get('golap.quality', 'auto');
+  if (saved === 'high' || saved === 'low') return saved;
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+    const r = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '';
+    if (/swiftshader|llvmpipe|software/i.test(r)) return 'low';
+  } catch (e) {}
+  return 'high';
+}
+const QUALITY = detectQuality();
+const LOW = QUALITY === 'low';
+
+/* ---------------------------------------------------------------------
+   Renderer, cena, câmera, controles
+   --------------------------------------------------------------------- */
+const canvas = $('#c3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(LOW ? 0.6 : Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.physicallyCorrectLights = true;
+renderer.shadowMap.enabled = !LOW;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const MAX_ANISO = renderer.capabilities.getMaxAnisotropy();
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0e13);
+scene.fog = new THREE.Fog(0x0b0e13, 22, 46);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.05, 70);
+camera.position.set(4.6, 2.0, 5.4);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.07;
+controls.minDistance = 0.6; controls.maxDistance = 13; controls.maxPolarAngle = Math.PI * 0.495;
+controls.target.set(0, 0.45, 0);
+controls.autoRotateSpeed = 0.8;
+
+let composer = null, bloomPass = null;
+if (!LOW) {
+  composer = new THREE.EffectComposer(renderer);
+  composer.addPass(new THREE.RenderPass(scene, camera));
+  bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.38, 0.5, 0.86);
+  composer.addPass(bloomPass);
+}
+
+/* ---------------------------------------------------------------------
+   Texturas procedurais (canvas) — cor + normal derivada + rugosidade
+   --------------------------------------------------------------------- */
+function makeNoise(seed) {
+  let s = seed || 1; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const P = new Float32Array(256 * 256); for (let i = 0; i < P.length; i++) P[i] = rnd();
+  const v = (x, y) => P[((y & 255) << 8) | (x & 255)];
+  const sm = t => t * t * (3 - 2 * t);
+  return (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = sm(x - xi), yf = sm(y - yi);
+    const a = v(xi, yi), b = v(xi + 1, yi), c = v(xi, yi + 1), d = v(xi + 1, yi + 1);
+    return a + (b - a) * xf + (c - a) * yf + (a - b - c + d) * xf * yf; };
+}
+const NOISE = makeNoise(7);
+function fbm(x, y, oct = 4, per = 0) {
+  let a = 0, amp = 0.5, f = 1;
+  for (let o = 0; o < oct; o++) { a += amp * NOISE(x * f, y * f); amp *= 0.5; f *= 2; }
+  return a;
+}
+function canvasTex(w, h, draw, opts = {}) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  draw(g, w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = MAX_ANISO;
+  if (opts.srgb !== false) t.encoding = THREE.sRGBEncoding;
+  if (opts.repeat) t.repeat.set(opts.repeat[0], opts.repeat[1]);
+  t.userData = { canvas: c };
+  return t;
+}
+/* altura (função 0..1) → textura normal (Sobel) */
+function heightToNormal(w, h, hf, strength = 2, repeat) {
+  const H = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) H[y * w + x] = hf(x, y);
+  return canvasTex(w, h, (g) => {
+    const img = g.createImageData(w, h), d = img.data;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const l = H[y * w + ((x - 1 + w) % w)], r = H[y * w + ((x + 1) % w)], u = H[((y - 1 + h) % h) * w + x], dn = H[((y + 1) % h) * w + x];
+      let nx = (l - r) * strength, ny = (u - dn) * strength, nz = 1; const len = Math.hypot(nx, ny, nz);
+      const i = (y * w + x) * 4; d[i] = (nx / len * 0.5 + 0.5) * 255; d[i + 1] = (ny / len * 0.5 + 0.5) * 255; d[i + 2] = (nz / len * 0.5 + 0.5) * 255; d[i + 3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+  }, { srgb: false, repeat });
+}
+function pixelTex(w, h, fn, opts = {}) {
+  return canvasTex(w, h, (g) => {
+    const img = g.createImageData(w, h), d = img.data;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const c = fn(x, y); const i = (y * w + x) * 4; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = c[3] === undefined ? 255 : c[3]; }
+    g.putImageData(img, 0, 0);
+  }, opts);
+}
+const TEX = {};
+function buildTextures() {
+  const S = 256;
+  // Epóxi cinza com flocos (piso) — 4 m por repetição
+  const flake = (x, y) => { const n = NOISE(x * 1.7, y * 1.7); return n > 0.93 ? 1 : n < 0.06 ? -1 : 0; };
+  TEX.epoxy = pixelTex(S, S, (x, y) => { const n = fbm(x / 40, y / 40), f = flake(x, y); const b = 70 + n * 26 + f * 22; return [b * 0.93, b * 0.97, b * 1.04]; }, { repeat: [7, 7] });
+  TEX.epoxyRough = pixelTex(S, S, (x, y) => { const v = 40 + fbm(x / 22 + 9, y / 22) * 70; return [v, v, v]; }, { srgb: false, repeat: [7, 7] });
+  TEX.epoxyN = heightToNormal(S, S, (x, y) => fbm(x / 14, y / 14, 3) * 0.6 + (flake(x, y) ? 0.25 : 0), 1.2, [7, 7]);
+  // Bloco de concreto pintado (parede)
+  const blockH = (x, y) => { const bx = x % 128, by = y % 64; const off = (Math.floor(y / 64) % 2) * 64; const bxx = (x + off) % 128; const m = (bxx < 3 || by < 3) ? 0 : 1; return m * (0.8 + fbm(x / 9, y / 9, 3) * 0.2); };
+  TEX.wall = pixelTex(S, S, (x, y) => { const m = blockH(x, y); const n = fbm(x / 30, y / 30); const b = m ? 168 + n * 30 : 120; return [b, b * 0.99, b * 0.96]; }, { repeat: [10, 3] });
+  TEX.wallN = heightToNormal(S, S, blockH, 3, [10, 3]);
+  // Pneu: banda de rodagem
+  TEX.treadN = heightToNormal(128, 128, (x, y) => { const groove = (x % 32 < 4) ? 0 : 1; const sipe = ((y + (x > 64 ? 16 : 0)) % 32 < 3) ? 0.3 : 1; return groove * sipe; }, 4, [8, 1]);
+  TEX.rubber = pixelTex(64, 64, (x, y) => { const b = 22 + fbm(x / 8, y / 8) * 12; return [b, b, b]; });
+  // Metal escovado
+  TEX.brushedR = pixelTex(S, 16, (x, y) => { const v = 70 + NOISE(x * 3.1, y * 0.05) * 60; return [v, v, v]; }, { srgb: false });
+  // Portão de enrolar (ondulado)
+  TEX.gateN = heightToNormal(64, 64, (x, y) => (Math.sin(y / 64 * Math.PI * 2 * 4) * 0.5 + 0.5), 3, [1, 14]);
+  // Borracha da bancada
+  TEX.matN = heightToNormal(64, 64, (x, y) => ((x % 8 < 4) ^ (y % 8 < 4)) ? 1 : 0.6, 1.5, [10, 4]);
+  // Grade frontal do Gol
+  TEX.grille = pixelTex(128, 32, (x, y) => { const line = (y % 6) < 3; return line ? [18, 18, 20] : [5, 5, 6]; });
+  // Pintura: flocos metálicos
+  TEX.flakeN = heightToNormal(128, 128, (x, y) => NOISE(x * 2.3, y * 2.3), 0.8, [12, 12]);
+  // Tecido dos bancos
+  TEX.fabric = pixelTex(64, 64, (x, y) => { const s = ((x + y) % 4 < 2) ? 1 : 0.85; const b = 38 * s; return [b, b * 0.98, b * 1.05]; }, { repeat: [6, 6] });
+}
+buildTextures();
+
+/* Textos em CanvasTexture (pôsteres, placas, display FT450) */
+function textTexture(w, h, draw) { const t = canvasTex(w, h, draw); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t; }
+
+/* Materiais compartilhados */
+const MAT = {};
+function std(o) { return new THREE.MeshStandardMaterial(o); }
+function buildMaterials() {
+  MAT.chrome = std({ color: 0xf1f5f9, metalness: 1, roughness: 0.12 });
+  MAT.alu = std({ color: 0xc9ccd1, metalness: 0.95, roughness: 0.32, roughnessMap: TEX.brushedR });
+  MAT.darkMetal = std({ color: 0x2b2f36, metalness: 0.7, roughness: 0.45 });
+  MAT.castIron = std({ color: 0x3a3631, metalness: 0.55, roughness: 0.75 });
+  MAT.blackPlastic = std({ color: 0x15161a, metalness: 0.0, roughness: 0.6 });
+  MAT.rubber = std({ color: 0x1a1a1a, roughness: 0.88, metalness: 0, map: TEX.rubber });
+  MAT.tire = std({ color: 0x1c1c1c, roughness: 0.9, metalness: 0, normalMap: TEX.treadN, normalScale: new THREE.Vector2(1.2, 1.2) });
+  MAT.blueValve = std({ color: 0x1d4ed8, metalness: 0.35, roughness: 0.35 });
+  MAT.engineBlock = std({ color: 0x5b5e63, metalness: 0.6, roughness: 0.55 });
+  MAT.lens = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0.05, transmission: 0.6, transparent: true, opacity: 0.55, clearcoat: 1 });
+  MAT.headlight = std({ color: 0xffffff, emissive: 0xfff4d6, emissiveIntensity: 0.35, roughness: 0.15, metalness: 0.6 });
+  MAT.tail = std({ color: 0x8b0000, emissive: 0x7f0000, emissiveIntensity: 0.35, roughness: 0.25, metalness: 0.1 });
+  MAT.amber = std({ color: 0xd97706, emissive: 0x7c2d12, emissiveIntensity: 0.25, roughness: 0.25 });
+  MAT.glass = new THREE.MeshPhysicalMaterial({ color: 0x9fb4c4, metalness: 0, roughness: 0.04, transmission: 0.75, transparent: true, opacity: 0.38, ior: 1.5, clearcoat: 1, side: THREE.DoubleSide, depthWrite: false });
+  MAT.interior = std({ color: 0x24252a, roughness: 0.85, map: TEX.fabric });
+  MAT.dash = std({ color: 0x18191c, roughness: 0.7 });
+  MAT.red = std({ color: 0xdc2626, roughness: 0.4, metalness: 0.1 });
+  MAT.redStripe = std({ color: 0xd11a1a, roughness: 0.35, metalness: 0.05 });
+  MAT.gold = std({ color: 0xd4a017, metalness: 1, roughness: 0.25 });
+  MAT.bay = std({ color: 0x1a1b1f, roughness: 0.8, metalness: 0.2 });
+  MAT.grille = std({ map: TEX.grille, roughness: 0.6, metalness: 0.2 });
+  MAT.disc = std({ color: 0x8b8f96, metalness: 0.9, roughness: 0.42, roughnessMap: TEX.brushedR });
+  MAT.caliper = std({ color: 0xb91c1c, metalness: 0.3, roughness: 0.35 });
+  MAT.hose = std({ color: 0x111215, roughness: 0.6 });
+  MAT.filterRed = std({ color: 0xc81e1e, roughness: 0.75 });
+  MAT.copper = std({ color: 0xb87333, metalness: 1, roughness: 0.35 });
+  MAT.heatPaint = std({ color: 0x202124, metalness: 0.4, roughness: 0.7 });
+  MAT.turboHot = std({ color: 0x5b4636, metalness: 0.8, roughness: 0.5, emissive: 0xff3b00, emissiveIntensity: 0.0 });
+  MAT.orange = std({ color: 0xea580c, metalness: 0.4, roughness: 0.35 });
+  // Pintura independente (GTA SA): carroceria, capô, para-choques, rodas
+  const paint = c => new THREE.MeshPhysicalMaterial({ color: c, metalness: 0.45, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.05, normalMap: TEX.flakeN, normalScale: new THREE.Vector2(0.06, 0.06) });
+  MAT.paintChassis = paint(0x9f1d20); MAT.paintBonnet = paint(0x9f1d20);
+  MAT.paintBumpers = new THREE.MeshPhysicalMaterial({ color: 0x16171a, metalness: 0.05, roughness: 0.55, clearcoat: 0.3, clearcoatRoughness: 0.3 });
+  MAT.paintWheels = new THREE.MeshPhysicalMaterial({ color: 0xc9ccd1, metalness: 0.85, roughness: 0.28, clearcoat: 0.6 });
+}
+buildMaterials();
+
+
+/* ---------------------------------------------------------------------
+   Helpers de geometria
+   --------------------------------------------------------------------- */
+function mesh(geo, mat, x = 0, y = 0, z = 0, parent = null, cast = true, recv = true) {
+  const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = recv;
+  if (parent) parent.add(m); return m;
+}
+function box(w, h, d, mat, x, y, z, parent, cast, recv) { return mesh(new THREE.BoxGeometry(w, h, d), mat, x, y, z, parent, cast, recv); }
+function cyl(rt, rb, h, mat, x, y, z, parent, seg = 24, cast, recv) { return mesh(new THREE.CylinderGeometry(rt, rb, h, seg), mat, x, y, z, parent, cast, recv); }
+/* Caixa com cantos chanfrados/arredondados (ExtrudeGeometry com bevel) */
+function roundedBox(w, h, d, r, mat, parent, seg = 2) {
+  const s = new THREE.Shape(); const x = -w / 2 + r, y = -h / 2 + r, W = w - 2 * r, H = h - 2 * r;
+  s.moveTo(x, -h / 2); s.lineTo(x + W, -h / 2); s.quadraticCurveTo(w / 2, -h / 2, w / 2, y); s.lineTo(w / 2, y + H);
+  s.quadraticCurveTo(w / 2, h / 2, x + W, h / 2); s.lineTo(x, h / 2); s.quadraticCurveTo(-w / 2, h / 2, -w / 2, y + H); s.lineTo(-w / 2, y); s.quadraticCurveTo(-w / 2, -h / 2, x, -h / 2);
+  const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * Math.min(r, d / 3), bevelEnabled: true, bevelThickness: Math.min(r, d / 3), bevelSize: Math.min(r, d / 3) * 0.6, bevelSegments: seg, curveSegments: 4 });
+  g.translate(0, 0, -(d - 2 * Math.min(r, d / 3)) / 2);
+  const m = mesh(g, mat, 0, 0, 0, parent); return m;
+}
+function tube(points, radius, mat, parent, seg = 32, rseg = 10) {
+  const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(p[0], p[1], p[2])));
+  return mesh(new THREE.TubeGeometry(curve, seg, radius, rseg, false), mat, 0, 0, 0, parent);
+}
+
+/* ---------------------------------------------------------------------
+   3.1 OFICINA (buildTuningGarage)
+   --------------------------------------------------------------------- */
+const garage = new THREE.Group(); scene.add(garage);
+const LIFT = { group: null, carriages: [], height: 0, target: 0 };
+let floorMesh = null;
+function buildTuningGarage() {
+  const G = garage;
+  // Piso epóxi 28x28 (roughness 0.22 / metalness 0.35)
+  const floorMat = std({ color: 0xaab2bd, map: TEX.epoxy, roughness: 0.22, metalness: 0.35, roughnessMap: TEX.epoxyRough, normalMap: TEX.epoxyN, normalScale: new THREE.Vector2(0.25, 0.25) });
+  if (!LOW && THREE.Reflector) {
+    // Reflexo real do carro no epóxi: espelho sob o piso translúcido
+    const refl = new THREE.Reflector(new THREE.PlaneGeometry(28, 28), { clipBias: 0.003, textureWidth: Math.min(1024, window.innerWidth), textureHeight: Math.min(1024, window.innerHeight), color: 0x8a8f96 });
+    refl.rotation.x = -Math.PI / 2; refl.position.y = -0.004; G.add(refl);
+    floorMat.transparent = true; floorMat.opacity = 0.86;
+  }
+  floorMesh = mesh(new THREE.PlaneGeometry(28, 28), floorMat, 0, 0, 0, G, false, true);
+  floorMesh.rotation.x = -Math.PI / 2;
+
+  // Faixas de segurança amarelas (#eab308), levantadas 3 mm com polygonOffset
+  const stripeMat = std({ color: 0xeab308, roughness: 0.45, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  const hatchMat = std({ color: 0x111111, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+  const stripe = (w, d, x, z, mat = stripeMat, y = 0.003) => { const m = mesh(new THREE.PlaneGeometry(w, d), mat, x, y, z, G, false, true); m.rotation.x = -Math.PI / 2; return m; };
+  const BX = 2.6, BZ = 3.7, SW = 0.12;
+  stripe(BX * 2 + SW, SW, 0, BZ); stripe(BX * 2 + SW, SW, 0, -BZ); stripe(SW, BZ * 2, BX, 0); stripe(SW, BZ * 2, -BX, 0);
+  // Zebrado nas cabeceiras da baia
+  for (let i = -6; i <= 6; i++) { const m = stripe(0.16, 0.5, i * 0.38, BZ + 0.34); m.rotation.z = 0.6; }
+  stripe(BX * 2 + SW, 0.6, 0, BZ + 0.34, hatchMat, 0.002);
+  // Faixa do corredor de circulação
+  stripe(SW, 18, 6.4, -1); stripe(SW, 18, 9.2, -1);
+  for (let z = -9; z < 8; z += 1.6) { const m = stripe(2.6, 0.14, 7.8, z); m.rotation.z = 0.5; }
+
+  // Paredes de bloco pintado
+  const wallMat = std({ color: 0xc9ccd0, map: TEX.wall, normalMap: TEX.wallN, normalScale: new THREE.Vector2(0.8, 0.8), roughness: 0.92, metalness: 0 });
+  const wainMat = std({ color: 0x3f4650, roughness: 0.75, metalness: 0.1 });
+  const WH = 6.2;
+  [[0, -14, 0], [0, 14, Math.PI], [-14, 0, Math.PI / 2], [14, 0, -Math.PI / 2]].forEach(([x, z, ry]) => {
+    const w = mesh(new THREE.PlaneGeometry(28, WH), wallMat, x, WH / 2, z, G, false, true); w.rotation.y = ry;
+    const b = box(28, 1.4, 0.06, wainMat, x, 0.7, z, G, false, true); b.rotation.y = ry;
+    b.position.x += Math.sin(ry) * 0.03; b.position.z += Math.cos(ry) * 0.03;
+    const s = box(28, 0.12, 0.08, stripeMat, x + Math.sin(ry) * 0.04, 1.46, z + Math.cos(ry) * 0.04, G, false, true); s.rotation.y = ry;
+  });
+  // Teto e vigas metálicas
+  const ceil = mesh(new THREE.PlaneGeometry(28, 28), std({ color: 0x1f242b, roughness: 0.9 }), 0, WH, 0, G, false, false); ceil.rotation.x = Math.PI / 2;
+  const beamMat = std({ color: 0x3b4350, metalness: 0.6, roughness: 0.5 });
+  for (let x = -12; x <= 12; x += 4) { box(0.22, 0.45, 28, beamMat, x, WH - 0.25, 0, G, false, false); }
+  // Luminárias industriais (tubos emissivos) — acento para o bloom
+  const tubeMat = std({ color: 0xffffff, emissive: 0xf1f5ff, emissiveIntensity: 2.2, roughness: 0.3 });
+  const housing = std({ color: 0x9aa3ad, metalness: 0.7, roughness: 0.35, side: THREE.DoubleSide });
+  for (let x = -8; x <= 8; x += 4) for (let z = -8; z <= 8; z += 4) {
+    const g = new THREE.Group(); g.position.set(x, 4.9, z); G.add(g);
+    box(0.34, 0.06, 1.7, housing, 0, 0.06, 0, g, false, false);
+    cyl(0.025, 0.025, 1.6, tubeMat, -0.08, 0, 0, g, 8, false, false).rotation.x = Math.PI / 2;
+    cyl(0.025, 0.025, 1.6, tubeMat, 0.08, 0, 0, g, 8, false, false).rotation.x = Math.PI / 2;
+    cyl(0.006, 0.006, WH - 4.95, beamMat, 0, (WH - 4.9) / 2, 0.7, g, 4, false, false);
+    cyl(0.006, 0.006, WH - 4.95, beamMat, 0, (WH - 4.9) / 2, -0.7, g, 4, false, false);
+  }
+  // Janelas altas (vidro aramado com luz do dia)
+  const winMat = std({ color: 0xbfd8ee, emissive: 0x9cc6ee, emissiveIntensity: 0.9, roughness: 0.2 });
+  for (let x = -10; x <= 10; x += 5) { box(3.2, 0.9, 0.05, winMat, x, 4.9, -13.96, G, false, false); for (let k = -1; k <= 1; k++) box(0.05, 0.92, 0.07, beamMat, x + k * 1.06, 4.9, -13.94, G, false, false); }
+
+  // Portão de enrolar (aço ondulado) na parede do fundo
+  const gateMat = std({ color: 0x8d96a0, metalness: 0.75, roughness: 0.42, normalMap: TEX.gateN, normalScale: new THREE.Vector2(1, 1) });
+  const gate = box(5.4, 4.4, 0.08, gateMat, 6.5, 2.2, -13.92, G, false, true);
+  box(5.8, 0.5, 0.5, std({ color: 0x4b5563, metalness: 0.6, roughness: 0.4 }), 6.5, 4.65, -13.7, G, false, false);
+  [-2.85, 2.85].forEach(dx => box(0.14, 4.6, 0.18, beamMat, 6.5 + dx, 2.3, -13.85, G, false, true));
+  for (let i = -6; i <= 6; i++) { const m = stripe(0.16, 0.7, 6.5 + i * 0.4, -13.4); m.rotation.z = 0.6; }
+
+  // Placa luminosa da oficina
+  const signTex = textTexture(1024, 256, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#0b1220'); gr.addColorStop(1, '#111827'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#38bdf8'; g.lineWidth = 10; g.strokeRect(14, 14, w - 28, h - 28);
+    g.font = 'bold 118px "Chakra Petch", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.shadowColor = '#38bdf8'; g.shadowBlur = 26; g.fillStyle = '#e0f2fe'; g.fillText('AP PREPARAÇÕES', w / 2, h / 2 - 18);
+    g.shadowBlur = 0; g.font = '600 40px Inter, Arial'; g.fillStyle = '#eab308'; g.fillText('MOTORES · TURBO · INJEÇÃO · DINAMÔMETRO', w / 2, h / 2 + 72);
+  });
+  const sign = mesh(new THREE.PlaneGeometry(6, 1.5), std({ map: signTex, emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.9, roughness: 0.4 }), -3.2, 3.5, -13.9, G, false, false);
+  // Pôsteres na parede lateral
+  const poster = (title, sub, c1, c2, x, y, z, ry) => {
+    const t = textTexture(512, 720, (g, w, h) => {
+      const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, c1); gr.addColorStop(1, c2); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.globalAlpha = 0.18; for (let i = 0; i < 18; i++) { g.fillStyle = '#fff'; g.fillRect(0, i * 46, w, 3); } g.globalAlpha = 1;
+      g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = 'bold 96px "Chakra Petch", Arial'; g.fillText(title, w / 2, 260);
+      g.font = '600 38px Inter, Arial'; g.fillStyle = '#fde68a'; g.fillText(sub, w / 2, 340);
+      g.strokeStyle = '#fff'; g.lineWidth = 8; g.strokeRect(26, 26, w - 52, h - 52);
+      g.font = 'bold 30px Inter, Arial'; g.fillStyle = '#fff'; g.fillText('1994 · LINHA AP', w / 2, h - 70);
+    });
+    const p = mesh(new THREE.PlaneGeometry(1.1, 1.55), std({ map: t, roughness: 0.55 }), x, y, z, G, false, false); p.rotation.y = ry; return p;
+  };
+  poster('GTS', 'Gol 1.8 · 99 cv', '#7f1d1d', '#111827', -13.95, 2.7, -4.5, Math.PI / 2);
+  poster('AP 2.0', 'Turbo Master Power', '#1e3a8a', '#0f172a', -13.95, 2.7, -2.8, Math.PI / 2);
+  poster('WEBER', '40 IDF · cornetas', '#854d0e', '#1c1917', -13.95, 2.7, -1.1, Math.PI / 2);
+  poster('BBS', 'RS 17" Euro Look', '#14532d', '#0c0a09', -6.5, 2.7, -13.95, 0);
+  // Placa de segurança + extintor
+  const safeTex = textTexture(512, 256, (g, w, h) => { g.fillStyle = '#eab308'; g.fillRect(0, 0, w, h); g.fillStyle = '#111'; g.fillRect(10, 10, w - 20, h - 20); g.fillStyle = '#eab308'; g.font = 'bold 54px "Chakra Petch", Arial'; g.textAlign = 'center'; g.fillText('ATENÇÃO', w / 2, 100); g.font = '600 32px Inter, Arial'; g.fillText('USO OBRIGATÓRIO DE EPI', w / 2, 170); });
+  const sp = mesh(new THREE.PlaneGeometry(1.1, 0.55), std({ map: safeTex, roughness: 0.5 }), -13.95, 2.1, 3.5, G, false, false); sp.rotation.y = Math.PI / 2;
+  const ext = new THREE.Group(); ext.position.set(-13.8, 0.85, 4.6); G.add(ext);
+  cyl(0.09, 0.09, 0.55, MAT.red, 0, 0, 0, ext, 16); cyl(0.03, 0.04, 0.08, MAT.blackPlastic, 0, 0.31, 0, ext, 10);
+
+  /* Elevador automotivo de 2 colunas (3,8 m, azul #1d4ed8) */
+  const liftBlue = std({ color: 0x1d4ed8, metalness: 0.45, roughness: 0.38 });
+  const liftDark = std({ color: 0x1e293b, metalness: 0.6, roughness: 0.4 });
+  const lift = new THREE.Group(); G.add(lift); LIFT.group = lift;
+  [-1.62, 1.62].forEach((x, idx) => {
+    box(0.62, 0.025, 0.62, liftDark, x, 0.0125, 0, lift);
+    const col = roundedBox(0.3, 3.8, 0.36, 0.03, liftBlue, lift); col.position.set(x, 1.9, 0);
+    box(0.06, 3.6, 0.2, liftDark, x - Math.sign(x) * 0.17, 1.9, 0, lift);
+    cyl(0.035, 0.035, 2.6, MAT.chrome, x + Math.sign(x) * 0.2, 1.4, 0.12, lift, 12);
+    // Carro (carriage) com dois braços articulados
+    const car = new THREE.Group(); car.position.set(x - Math.sign(x) * 0.22, 0.12, 0); lift.add(car); LIFT.carriages.push(car);
+    box(0.16, 0.5, 0.3, liftBlue, 0, 0.2, 0, car);
+    [[0.9, 0.55], [-0.9, -0.5]].forEach(([dz, ang]) => {
+      const arm = new THREE.Group(); car.add(arm);
+      const len = Math.hypot(dz, 0.75), a = Math.atan2(-Math.sign(x) * 0.75, dz);
+      const bar = box(0.09, 0.07, len, liftDark, 0, 0, len / 2, arm); arm.rotation.y = a;
+      cyl(0.075, 0.075, 0.04, MAT.rubber, 0, 0.05, len, arm, 18);
+      box(0.11, 0.02, len * 0.6, stripeMat, 0, 0.036, len * 0.35, arm, false);
+    });
+  });
+  const topBar = roundedBox(3.6, 0.22, 0.26, 0.03, liftBlue, lift); topBar.position.set(0, 3.8, 0);
+  box(3.2, 0.08, 0.02, stripeMat, 0, 3.8, 0.14, lift, false);
+  const liftTex = textTexture(512, 96, (g, w, h) => { g.fillStyle = '#1d4ed8'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.font = 'bold 60px "Chakra Petch", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('AP LIFT 4.0T', w / 2, h / 2 + 2); });
+  mesh(new THREE.PlaneGeometry(1.4, 0.22), std({ map: liftTex, roughness: 0.4 }), 0, 3.8, 0.131, lift, false, false);
+  // Unidade hidráulica
+  box(0.3, 0.45, 0.25, std({ color: 0x334155, metalness: 0.5, roughness: 0.5 }), 1.97, 1.1, 0, lift);
+  tube([[1.97, 0.9, 0], [2.1, 0.3, 0.15], [1.8, 0.03, 0.4], [0, 0.03, 0.42], [-1.6, 0.03, 0.3], [-1.75, 0.3, 0.15]], 0.016, MAT.hose, lift, 48, 8);
+  const cover = box(3.0, 0.03, 0.28, liftDark, 0, 0.015, 0.42, lift); // cobertura do duto no piso
+
+  /* Bancada de preparação AP (tampo emborrachado + gaveteiros vermelhos #991b1b) */
+  const benchRed = std({ color: 0x991b1b, metalness: 0.35, roughness: 0.42 });
+  const benchTop = std({ color: 0x4b5563, roughness: 0.8, normalMap: TEX.matN, normalScale: new THREE.Vector2(0.4, 0.4) });
+  const bench = new THREE.Group(); bench.position.set(-4.9, 0, -2.2); bench.rotation.y = Math.PI / 2; G.add(bench);
+  box(2.8, 0.05, 0.8, benchTop, 0, 0.93, 0, bench);
+  box(2.84, 0.06, 0.84, liftDark, 0, 0.885, 0, bench);
+  [-0.95, 0.95].forEach(x => {
+    box(0.85, 0.84, 0.74, benchRed, x, 0.43, 0, bench);
+    for (let i = 0; i < 5; i++) { const y = 0.12 + i * 0.16; box(0.79, 0.13, 0.01, std({ color: 0xa31f1f, metalness: 0.35, roughness: 0.38 }), x, y, 0.375, bench, false); box(0.4, 0.02, 0.03, MAT.alu, x, y + 0.03, 0.39, bench, false); }
+  });
+  box(1.0, 0.04, 0.7, liftDark, 0, 0.2, 0, bench);
+  // Painel perfurado com ferramentas
+  const peg = box(2.8, 1.2, 0.03, std({ color: 0x334155, roughness: 0.7, metalness: 0.2 }), 0, 1.65, -0.39, bench, false);
+  for (let i = 0; i < 9; i++) { // chaves combinadas
+    const s = 0.16 + i * 0.025; const w = new THREE.Group(); w.position.set(-1.25 + i * 0.09, 1.7, -0.36); bench.add(w);
+    box(0.018, s, 0.006, MAT.chrome, 0, 0, 0, w, false); mesh(new THREE.TorusGeometry(0.018, 0.006, 6, 12), MAT.chrome, 0, s / 2, 0, w, false);
+  }
+  for (let i = 0; i < 6; i++) { // chaves de fenda
+    const g = new THREE.Group(); g.position.set(-0.25 + i * 0.07, 1.68, -0.355); bench.add(g);
+    cyl(0.012, 0.012, 0.09, [MAT.red, MAT.blueValve, std({ color: 0xeab308, roughness: 0.4 })][i % 3], 0, 0.06, 0, g, 8, false); cyl(0.003, 0.003, 0.12, MAT.chrome, 0, -0.05, 0, g, 6, false);
+  }
+  const ham = new THREE.Group(); ham.position.set(0.4, 1.7, -0.35); bench.add(ham); cyl(0.012, 0.012, 0.3, std({ color: 0x92400e, roughness: 0.6 }), 0, 0, 0, ham, 8, false); box(0.12, 0.035, 0.035, MAT.darkMetal, 0, 0.15, 0, ham, false);
+  for (let i = 0; i < 7; i++) cyl(0.012 + i * 0.002, 0.012 + i * 0.002, 0.04, MAT.chrome, 0.75 + i * 0.07, 1.42, -0.35, bench, 12, false).rotation.x = Math.PI / 2; // soquetes
+  // Morsa
+  const vise = new THREE.Group(); vise.position.set(1.15, 0.955, 0.1); bench.add(vise);
+  box(0.12, 0.1, 0.2, std({ color: 0x1d4ed8, metalness: 0.5, roughness: 0.4 }), 0, 0.05, 0, vise); box(0.13, 0.06, 0.03, MAT.darkMetal, 0, 0.13, 0.08, vise); cyl(0.008, 0.008, 0.18, MAT.chrome, 0, 0.06, 0.18, vise, 6).rotation.x = Math.PI / 2;
+  // Pistão + biela forjados em exposição sobre a bancada
+  const showcase = new THREE.Group(); showcase.position.set(-0.6, 0.955, 0.05); bench.add(showcase);
+  cyl(0.041, 0.041, 0.05, MAT.alu, 0, 0.17, 0, showcase, 20); box(0.022, 0.13, 0.012, MAT.orange, 0, 0.08, 0, showcase); mesh(new THREE.TorusGeometry(0.03, 0.01, 8, 16), MAT.orange, 0, 0.02, 0, showcase);
+  box(0.3, 0.012, 0.18, std({ color: 0x0f172a, roughness: 0.6 }), 0, 0.006, 0, showcase, false);
+  // Caixas de peças e latas de óleo
+  const can = (x, z, c, parent, y = 0.955) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); box(0.11, 0.2, 0.06, std({ color: c, roughness: 0.45 }), 0, 0.1, 0, g); cyl(0.015, 0.015, 0.03, MAT.blackPlastic, 0.03, 0.215, 0, g, 8); return g; };
+  can(0.3, 0.2, 0x1d4ed8, bench); can(0.44, 0.2, 0x1d4ed8, bench); can(0.58, 0.18, 0xeab308, bench);
+  box(0.35, 0.16, 0.25, std({ color: 0xb45309, roughness: 0.85 }), -1.1, 1.035, 0.1, bench);
+
+  // Carrinho de ferramentas vermelho
+  const cart = new THREE.Group(); cart.position.set(-3.8, 0, 0.6); cart.rotation.y = 0.4; G.add(cart);
+  box(0.75, 0.85, 0.46, benchRed, 0, 0.5, 0, cart);
+  for (let i = 0; i < 6; i++) { box(0.7, 0.11, 0.01, std({ color: 0xa31f1f, metalness: 0.35, roughness: 0.38 }), 0, 0.17 + i * 0.13, 0.235, cart, false); box(0.36, 0.015, 0.025, MAT.alu, 0, 0.2 + i * 0.13, 0.25, cart, false); }
+  box(0.78, 0.03, 0.5, MAT.darkMetal, 0, 0.94, 0, cart);
+  [[-0.3, -0.18], [0.3, -0.18], [-0.3, 0.18], [0.3, 0.18]].forEach(([x, z]) => { cyl(0.04, 0.04, 0.03, MAT.rubber, x, 0.04, z, cart, 12).rotation.x = Math.PI / 2; });
+  cyl(0.012, 0.012, 0.6, MAT.chrome, 0, 0.8, -0.27, cart, 8).rotation.z = Math.PI / 2;
+
+  // Pilhas de pneus de arrancada/pista
+  const tireGeo = makeTireGeometry(0.32, 0.2, 0.225);
+  const stacks = [[3.7, -2.4, 5], [4.5, -1.6, 4], [4.3, -3.4, 3], [-5.6, 2.8, 4], [-5.2, 3.8, 2]];
+  stacks.forEach(([x, z, n], si) => {
+    for (let i = 0; i < n; i++) {
+      const t = mesh(tireGeo, MAT.tire, x + Math.sin(i * 2.1 + si) * 0.03, 0.115 + i * 0.226, z + Math.cos(i * 1.7) * 0.03, G);
+      t.rotation.x = Math.PI / 2; t.rotation.z = i * 0.7;
+    }
+  });
+  // Pneu encostado
+  const lean = mesh(tireGeo, MAT.tire, 3.6, 0.32, -1.1, G); lean.rotation.set(0.25, 0.9, 0);
+
+  // Estante porta-paletes com caixas, tambores e baldes de óleo
+  const rackMat = std({ color: 0xea580c, metalness: 0.4, roughness: 0.45 });
+  const rackBlue = std({ color: 0x1e40af, metalness: 0.45, roughness: 0.4 });
+  const rack = new THREE.Group(); rack.position.set(-1, 0, -8.5); G.add(rack);
+  for (let x = -5; x <= 5; x += 2.5) box(0.09, 3.6, 0.09, rackBlue, x, 1.8, -0.5, rack), box(0.09, 3.6, 0.09, rackBlue, x, 1.8, 0.5, rack);
+  [1.2, 2.4, 3.55].forEach(y => { box(10.1, 0.12, 0.08, rackMat, 0, y, 0.5, rack); box(10.1, 0.12, 0.08, rackMat, 0, y, -0.5, rack); box(10, 0.02, 1.0, std({ color: 0x6b7280, metalness: 0.5, roughness: 0.6 }), 0, y + 0.07, 0, rack, false); });
+  const boxMat = [std({ color: 0xb08850, roughness: 0.9 }), std({ color: 0x9c7a46, roughness: 0.9 }), std({ color: 0x334155, roughness: 0.6 })];
+  let seed = 3; const r = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  [1.28, 2.48].forEach(y => { for (let x = -4.7; x < 4.8;) { const w = 0.45 + r() * 0.5, h = 0.3 + r() * 0.5; const b = box(w, h, 0.6 + r() * 0.3, boxMat[Math.floor(r() * 3)], x + w / 2, y + h / 2, (r() - 0.5) * 0.15, rack); b.rotation.y = (r() - 0.5) * 0.12; x += w + 0.08 + r() * 0.25; } });
+  const drumMat = [std({ color: 0x1d4ed8, metalness: 0.5, roughness: 0.4 }), std({ color: 0xb91c1c, metalness: 0.5, roughness: 0.4 })];
+  for (let i = 0; i < 5; i++) { const d = new THREE.Group(); d.position.set(-4.3 + i * 0.66, 0.44, 0); rack.add(d); cyl(0.29, 0.29, 0.88, drumMat[i % 2], 0, 0, 0, d, 24); [-0.3, 0, 0.3].forEach(y => mesh(new THREE.TorusGeometry(0.292, 0.012, 6, 28), drumMat[i % 2], 0, y, 0, d).rotation.x = Math.PI / 2); }
+  for (let i = 0; i < 8; i++) can(0.4 + i * 0.16, (i % 2) * 0.14 - 0.07, i % 3 ? 0x1d4ed8 : 0xeab308, rack, 0);
+  // Motor AP de reserva em cavalete
+  const stand = new THREE.Group(); stand.position.set(-3.2, 0, -5.4); stand.rotation.y = 0.6; G.add(stand);
+  box(0.06, 0.06, 1.0, rackMat, 0, 0.05, 0, stand); box(0.6, 0.06, 0.06, rackMat, 0, 0.05, -0.45, stand); box(0.06, 0.8, 0.06, rackMat, 0, 0.45, 0.3, stand);
+  box(0.42, 0.36, 0.55, MAT.engineBlock, 0, 0.75, 0, stand); box(0.36, 0.08, 0.5, MAT.blueValve, 0, 0.97, 0, stand); cyl(0.07, 0.07, 0.04, MAT.darkMetal, 0, 0.7, 0.3, stand, 16).rotation.x = Math.PI / 2;
+
+  // Compressor de ar
+  const comp = new THREE.Group(); comp.position.set(5.6, 0, 2.6); comp.rotation.y = -0.7; G.add(comp);
+  const tank = cyl(0.25, 0.25, 1.1, MAT.red, 0, 0.35, 0, comp, 24); tank.rotation.z = Math.PI / 2;
+  box(0.35, 0.22, 0.3, MAT.darkMetal, 0.1, 0.7, 0, comp); cyl(0.1, 0.1, 0.25, MAT.alu, -0.2, 0.72, 0, comp, 16); cyl(0.05, 0.05, 0.05, MAT.chrome, 0.35, 0.62, 0.2, comp, 12).rotation.x = Math.PI / 2;
+  [[-0.4, 0.15], [0.4, 0.15], [-0.4, -0.15], [0.4, -0.15]].forEach(([x, z]) => box(0.05, 0.12, 0.05, MAT.darkMetal, x, 0.06, z, comp));
+  tube([[0.35, 0.62, 0.22], [0.6, 0.3, 0.6], [0.2, 0.02, 1.2], [-0.8, 0.02, 1.4]], 0.012, std({ color: 0xeab308, roughness: 0.5 }), comp, 32, 6);
+
+  // Guincho de motor amarelo
+  const crane = new THREE.Group(); crane.position.set(4.9, 0, -5.6); crane.rotation.y = -0.9; G.add(crane);
+  const yel = std({ color: 0xeab308, metalness: 0.35, roughness: 0.45 });
+  box(0.1, 0.1, 1.4, yel, -0.35, 0.08, 0, crane); box(0.1, 0.1, 1.4, yel, 0.35, 0.08, 0, crane); box(0.8, 0.1, 0.1, yel, 0, 0.08, -0.65, crane);
+  box(0.12, 1.6, 0.12, yel, 0, 0.88, -0.6, crane); const boom = box(0.1, 0.1, 1.5, yel, 0, 1.6, 0.0, crane); boom.rotation.x = -0.25;
+  tube([[0, 1.78, 0.7], [0, 1.4, 0.72], [0, 1.1, 0.72]], 0.008, MAT.darkMetal, crane, 6, 6); mesh(new THREE.TorusGeometry(0.04, 0.008, 6, 12), MAT.darkMetal, 0, 1.06, 0.72, crane);
+
+  // Cones e ralo
+  const cone = (x, z) => { const g = new THREE.Group(); g.position.set(x, 0, z); G.add(g); cyl(0.02, 0.14, 0.5, std({ color: 0xf97316, roughness: 0.5 }), 0, 0.27, 0, g, 16); box(0.34, 0.03, 0.34, MAT.blackPlastic, 0, 0.015, 0, g); cyl(0.065, 0.1, 0.07, std({ color: 0xf8fafc, roughness: 0.5 }), 0, 0.2, 0, g, 16); };
+  cone(2.9, 4.4); cone(-2.9, 4.4);
+  box(0.6, 0.006, 0.3, std({ color: 0x0b0b0b, metalness: 0.7, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), 0, 0.003, -4.4, G, false, true);
+}
+
+/* Pneu como LatheGeometry (banda + ombro arredondado + flanco) */
+function makeTireGeometry(R, w, rimR) {
+  const pts = []; const hw = w / 2, sh = Math.min(0.035, w * 0.18);
+  pts.push(new THREE.Vector2(rimR, -hw * 0.92));
+  pts.push(new THREE.Vector2(rimR + (R - rimR) * 0.5, -hw));
+  for (let i = 0; i <= 6; i++) { const a = -Math.PI / 2 + (i / 6) * Math.PI / 2; pts.push(new THREE.Vector2(R - sh + Math.cos(a) * sh, -hw + sh + Math.sin(a) * sh)); }
+  for (let i = 0; i <= 6; i++) { const a = (i / 6) * Math.PI / 2; pts.push(new THREE.Vector2(R - sh + Math.cos(a) * sh, hw - sh + Math.sin(a) * sh)); }
+  pts.push(new THREE.Vector2(rimR + (R - rimR) * 0.5, hw));
+  pts.push(new THREE.Vector2(rimR, hw * 0.92));
+  const g = new THREE.LatheGeometry(pts, 48);
+  g.rotateX(Math.PI / 2); // eixo do pneu em Z
+  g.computeVertexNormals();
+  return g;
+}
+
+/* ---------------------------------------------------------------------
+   Iluminação: Hemisphere (fill) + Directional (key, sombra 2048) + rim + SpotLight do cofre
+   --------------------------------------------------------------------- */
+const hemi = new THREE.HemisphereLight(0xdbeafe, 0x1f2937, 1.1); scene.add(hemi);
+const keyLight = new THREE.DirectionalLight(0xfff4e6, 3.0);
+keyLight.position.set(2.2, 9, 3.2); keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+Object.assign(keyLight.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 2, far: 18 });
+keyLight.shadow.bias = -0.0005; keyLight.shadow.normalBias = 0.03; keyLight.shadow.radius = 3;
+scene.add(keyLight); scene.add(keyLight.target);
+const rimLight = new THREE.DirectionalLight(0x9cc8ff, 1.4); rimLight.position.set(-4, 3.5, -6); scene.add(rimLight);
+const bayLight = new THREE.SpotLight(0x60a5fa, 0, 7, 0.55, 0.45, 2);
+bayLight.position.set(0, 2.5, 2.3); bayLight.castShadow = !LOW; bayLight.shadow.mapSize.set(1024, 1024); bayLight.shadow.bias = -0.0008;
+scene.add(bayLight); scene.add(bayLight.target);
+
+buildTuningGarage();
+
+
+
+/* =====================================================================
+   3.2 GOL QUADRADO G1 1.8 AP PROCEDURAL (buildGolQuadrado3D)
+   Frente do carro em +Z. 1 unidade = 1 m. C 3,81 × L 1,60 × A 1,37.
+   ===================================================================== */
+function mergeGeos(geos) {
+  let n = 0; const parts = geos.map(g => { const ng = g.index ? g.toNonIndexed() : g; n += ng.attributes.position.count; return ng; });
+  const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uv = new Float32Array(n * 2); let o = 0;
+  parts.forEach(g => {
+    pos.set(g.attributes.position.array, o * 3);
+    if (g.attributes.normal) nor.set(g.attributes.normal.array, o * 3);
+    if (g.attributes.uv) uv.set(g.attributes.uv.array.subarray(0, g.attributes.position.count * 2), o * 2);
+    o += g.attributes.position.count;
+  });
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return out;
+}
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3();
+function tg(geo, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, s = 1) {
+  _m4.compose(_v.set(x, y, z), _q.setFromEuler(_e.set(rx, ry, rz)), _s.set(s, s, s)); geo.applyMatrix4(_m4); return geo;
+}
+function shp(pts) { const s = new THREE.Shape(); pts.forEach((p, i) => i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1])); return s; }
+/* Extruda um perfil lateral (z, y) ao longo da largura X, centrado em x = 0 */
+function sideExtrude(shape, width, mat, parent, bev = 0.015, curveSeg = 24) {
+  const d = Math.max(0.001, width - 2 * bev);
+  const g = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: bev > 0, bevelThickness: bev, bevelSize: bev * 0.8, bevelSegments: 3, curveSegments: curveSeg });
+  g.rotateY(-Math.PI / 2); g.translate(d / 2, 0, 0);
+  return mesh(g, mat, 0, 0, 0, parent);
+}
+function quad(a, b, c, d, mat, parent) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute([...a, ...b, ...c, ...a, ...c, ...d], 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1], 2));
+  g.computeVertexNormals();
+  return mesh(g, mat, 0, 0, 0, parent, false, false);
+}
+function lathe(profile, mat, parent, seg = 32) { return mesh(new THREE.LatheGeometry(profile.map(p => new THREE.Vector2(p[0], p[1])), seg), mat, 0, 0, 0, parent); }
+
+const CAR = {
+  root: new THREE.Group(), proc: new THREE.Group(), body: new THREE.Group(), imported: null,
+  hood: { pivot: null, angle: 0, target: 0 }, parts: {}, frisos: [], wheels: [], wheelKey: null,
+  bodyY: 0, bodyTargetY: 0, FRONT_AXLE: 1.185, REAR_AXLE: -1.175, TRACK: 0.68
+};
+scene.add(CAR.root); CAR.root.add(CAR.proc); CAR.proc.add(CAR.body);
+
+const MATX = {};
+function buildGolQuadrado3D() {
+  const B = CAR.body, P = CAR.parts;
+  MATX.liner = std({ color: 0x0c0d0f, roughness: 0.95, side: THREE.DoubleSide });
+  MATX.hole = std({ color: 0x050506, roughness: 0.9 });
+  MATX.trim = std({ color: 0x0f1012, roughness: 0.5, metalness: 0.1 });
+  MATX.inox = std({ color: 0xe2e5ea, metalness: 1, roughness: 0.18, roughnessMap: TEX.brushedR });
+  MATX.bayDS = std({ color: 0x1a1b1f, roughness: 0.8, metalness: 0.2, side: THREE.DoubleSide });
+  const SH = 0.925, FA = CAR.FRONT_AXLE, RA = CAR.REAR_AXLE, AY = 0.33, AR = 0.40, AE = 0.2255;
+
+  /* --- Carroceria traseira (portas + caixa traseira), largura total 1,60 --- */
+  const rear = new THREE.Shape();
+  rear.moveTo(0.57, 0.24); rear.lineTo(RA + 0.39, 0.24);
+  rear.absarc(RA, AY, AR, -AE, Math.PI + AE, false);
+  rear.lineTo(-1.86, 0.26); rear.lineTo(-1.905, 0.34); rear.lineTo(-1.90, SH); rear.lineTo(-1.84, 0.945); rear.lineTo(0.57, SH); rear.lineTo(0.57, 0.24);
+  P.rearBody = sideExtrude(rear, 1.60, MAT.paintChassis, B, 0.02);
+  // Para-lamas dianteiros (laterais do cofre)
+  [-1, 1].forEach(side => {
+    const f = new THREE.Shape();
+    f.moveTo(0.57, 0.24); f.lineTo(FA - 0.39, 0.24);
+    f.absarc(FA, AY, AR, Math.PI + AE, -AE, true);
+    f.lineTo(1.86, 0.26); f.lineTo(1.905, 0.36); f.lineTo(1.90, 0.82); f.lineTo(0.57, SH); f.lineTo(0.57, 0.24);
+    const m = sideExtrude(f, 0.17, MAT.paintChassis, B, 0.015); m.position.x = side * 0.715;
+  });
+  // Frente: painel preto com faróis e grade
+  box(1.28, 0.42, 0.06, MAT.blackPlastic, 0, 0.61, 1.87, B);
+  box(1.28, 0.03, 0.10, MAT.paintChassis, 0, 0.815, 1.85, B); // travessa superior
+  // Caixas de roda (forros)
+  const linerGeo = (len) => { const g = new THREE.CylinderGeometry(AR + 0.01, AR + 0.01, len, 28, 1, true, 0, Math.PI); g.rotateZ(Math.PI / 2); return g; };
+  [-1, 1].forEach(side => { mesh(linerGeo(0.25), MATX.liner, side * 0.68, AY, FA, B, false, true); });
+  mesh(linerGeo(1.58), MATX.liner, 0, AY, RA, B, false, true);
+  // Assoalho e caixa interna
+  box(1.5, 0.03, 3.4, MATX.trim, 0, 0.235, -0.15, B, true, false);
+
+  /* --- Cofre do motor (aberto entre os para-lamas) --- */
+  box(1.26, 0.64, 0.02, MAT.bay, 0, 0.6, 0.585, B); // parede corta-fogo
+  [-1, 1].forEach(side => box(0.02, 0.5, 1.26, MAT.bay, side * 0.63, 0.55, 1.215, B));
+  box(1.26, 0.02, 1.26, MAT.bay, 0, 0.27, 1.215, B, false, true);
+  // Torres de suspensão
+  [-1, 1].forEach(side => { cyl(0.075, 0.09, 0.22, MAT.bay, side * 0.55, 0.66, 1.18, B, 20); cyl(0.03, 0.03, 0.03, MAT.darkMetal, side * 0.55, 0.785, 1.18, B, 12); });
+
+  /* --- Capô articulado (dobradiça junto ao para-brisa; X de 0 a -0,85 rad) --- */
+  const hp = new THREE.Group(); hp.position.set(0, SH, 0.585); B.add(hp); CAR.hood.pivot = hp;
+  const hs = shp([[0, 0.0], [1.30, -0.095], [1.33, -0.11], [1.31, -0.125], [0, -0.028]]);
+  P.hood = sideExtrude(hs, 1.27, MAT.paintBonnet, hp, 0.008);
+  const under = box(1.15, 0.006, 1.2, MATX.trim, 0, -0.06, 0.62, hp, false); under.rotation.x = 0.073;
+  // Haste do capô (aparece aberto)
+  P.hoodRod = cyl(0.006, 0.006, 0.62, MAT.darkMetal, -0.56, 0.0, 1.4, B, 6); P.hoodRod.visible = false;
+
+  /* --- Cabine: laterais com janelas, teto, vidros (MeshPhysical transmission 0.75) --- */
+  const XB = 0.775, TILT = 0.15;
+  const cabOutline = [[0.57, SH], [-0.02, 1.345], [-1.28, 1.37], [-1.40, 1.345], [-1.83, 0.965], [-1.83, SH]];
+  const doorWin = [[0.45, 0.955], [-0.03, 1.31], [-0.62, 1.325], [-0.62, 0.955]];
+  const quarterWin = [[-0.70, 0.955], [-0.70, 1.325], [-1.10, 1.335], [-1.30, 0.955]];
+  [-1, 1].forEach(side => {
+    const grp = new THREE.Group(); grp.position.set(side * XB, SH, 0); grp.rotation.z = side * TILT; B.add(grp);
+    const s = shp(cabOutline.map(p => [p[0], p[1] - SH]));
+    s.holes.push(new THREE.Path(doorWin.map(p => new THREE.Vector2(p[0], p[1] - SH))));
+    s.holes.push(new THREE.Path(quarterWin.map(p => new THREE.Vector2(p[0], p[1] - SH))));
+    sideExtrude(s, 0.032, MAT.paintChassis, grp, 0.006);
+    [doorWin, quarterWin].forEach(w => { const g = sideExtrude(shp(w.map(p => [p[0], p[1] - SH])), 0.006, MAT.glass, grp, 0); g.castShadow = false; });
+    // borrachas pretas das janelas
+    box(0.012, 0.02, 1.08, MATX.trim, 0.0, 0.035, -0.09, grp, false);
+    // Coluna B preta
+    box(0.036, 0.37, 0.07, MATX.trim, 0.0, 0.215, -0.66, grp, false);
+  });
+  const roof = shp([[-0.02, 1.345], [-1.28, 1.372], [-1.40, 1.347], [-1.40, 1.322], [-0.02, 1.322]]);
+  P.roof = sideExtrude(roof, 1.43, MAT.paintChassis, B, 0.012);
+  const xt = XB - (1.345 - SH) * Math.tan(TILT) - 0.01;
+  quad([-XB + 0.01, SH + 0.005, 0.57], [XB - 0.01, SH + 0.005, 0.57], [xt, 1.343, -0.02], [-xt, 1.343, -0.02], MAT.glass, B);
+  quad([xt, 1.343, -1.40], [-xt, 1.343, -1.40], [-XB + 0.03, 0.965, -1.83], [XB - 0.03, 0.965, -1.83], MAT.glass, B);
+  box(1.5, 0.03, 0.06, MATX.trim, 0, SH + 0.012, 0.60, B, false); // grelha do cowl
+  [-0.28, 0.2].forEach(x => { const w = box(0.5, 0.012, 0.02, MATX.trim, x, SH + 0.04, 0.53, B, false); w.rotation.z = 0.05; w.rotation.x = -0.6; });
+  const rw = box(0.38, 0.012, 0.02, MATX.trim, 0.05, 1.02, -1.80, B, false); rw.rotation.x = 0.75;
+  // Antena
+  const ant = cyl(0.003, 0.003, 0.6, MATX.trim, -0.6, 1.62, 0.02, B, 6); ant.rotation.x = -0.35;
+
+  /* --- Interior visível pelos vidros --- */
+  box(1.44, 0.004, 2.4, MAT.interior, 0, SH + 0.002, -0.62, B, false, true);
+  box(1.42, 0.12, 0.28, MAT.dash, 0, SH + 0.06, 0.42, B, false);
+  box(0.36, 0.08, 0.04, std({ color: 0x0a0a0a, roughness: 0.3 }), 0.36, SH + 0.13, 0.30, B, false);
+  const sw = mesh(new THREE.TorusGeometry(0.17, 0.016, 8, 32), MAT.dash, 0.36, 1.06, 0.18, B, false); sw.rotation.x = -0.35;
+  [-0.36, 0.36].forEach(x => {
+    const seat = roundedBox(0.48, 0.42, 0.11, 0.04, MAT.interior, B, 2); seat.position.set(x, SH + 0.2, -0.36); seat.rotation.x = -0.18;
+    const hr = roundedBox(0.24, 0.13, 0.08, 0.03, MAT.interior, B, 2); hr.position.set(x, SH + 0.47, -0.42);
+  });
+  const bench = roundedBox(1.25, 0.32, 0.12, 0.04, MAT.interior, B, 2); bench.position.set(0, SH + 0.15, -1.12); bench.rotation.x = -0.2;
+  // Display FuelTech FT450 (condicional) no painel
+  const ftTex = textTexture(256, 160, (g, w, h) => {
+    g.fillStyle = '#05070a'; g.fillRect(0, 0, w, h); g.strokeStyle = '#f97316'; g.lineWidth = 6; g.strokeRect(4, 4, w - 8, h - 8);
+    g.fillStyle = '#f97316'; g.font = 'bold 22px "Chakra Petch", Arial'; g.fillText('FT450', 14, 32);
+    g.fillStyle = '#e5e7eb'; g.font = 'bold 54px "Chakra Petch", Arial'; g.fillText('6800', 60, 98); g.font = '18px Inter, Arial'; g.fillText('RPM   MAP 1.5 bar', 14, 140);
+  });
+  P.ftDisplay = new THREE.Group(); B.add(P.ftDisplay);
+  box(0.16, 0.11, 0.025, MATX.trim, 0, 0, 0, P.ftDisplay, false);
+  mesh(new THREE.PlaneGeometry(0.145, 0.095), std({ map: ftTex, emissive: 0xffffff, emissiveMap: ftTex, emissiveIntensity: 0.9 }), 0, 0, -0.014, P.ftDisplay, false, false).rotation.y = Math.PI;
+  P.ftDisplay.position.set(0.02, SH + 0.19, 0.30); P.ftDisplay.rotation.x = 0.25;
+
+  /* --- Detalhes da lataria --- */
+  [-1, 1].forEach(side => {
+    const x = side * 0.802;
+    box(0.004, 0.6, 0.006, MATX.trim, x, 0.6, 0.57, B, false); // vão da porta
+    box(0.004, 0.6, 0.006, MATX.trim, x, 0.6, -0.60, B, false);
+    box(0.004, 0.006, 1.17, MATX.trim, x, 0.905, -0.015, B, false);
+    box(0.02, 0.025, 0.12, MATX.trim, x + side * 0.01, 0.80, -0.48, B, false); // maçaneta
+    // Friso lateral de proteção preto + filete vermelho (GTS)
+    box(0.016, 0.05, 2.7, MATX.trim, side * 0.81, 0.52, -0.15, B, false);
+    CAR.frisos.push(box(0.004, 0.008, 2.7, MAT.redStripe, side * 0.819, 0.522, -0.15, B, false));
+    // Retrovisores
+    const mir = new THREE.Group(); mir.position.set(side * 0.83, 1.0, 0.45); B.add(mir);
+    box(0.05, 0.05, 0.08, MATX.trim, -side * 0.03, -0.02, 0, mir, false);
+    const mh = roundedBox(0.13, 0.085, 0.06, 0.02, MATX.trim, mir, 2); mh.position.set(side * 0.04, 0.02, 0);
+    mesh(new THREE.PlaneGeometry(0.11, 0.07), MAT.chrome, side * 0.04, 0.02, -0.031, mir, false, false).rotation.y = Math.PI;
+    // Lanterna de seta lateral (pisca no para-lama)
+    box(0.006, 0.025, 0.05, MAT.amber, side * 0.805, 0.72, 1.35, B, false);
+  });
+  // Tampa de combustível
+  cyl(0.055, 0.055, 0.006, MAT.paintChassis, -0.803, 0.78, -1.45, B, 20).rotation.z = Math.PI / 2;
+
+  /* --- Frente: faróis retangulares, grade, piscas, emblema --- */
+  [-1, 1].forEach(side => {
+    box(0.31, 0.155, 0.03, MATX.trim, side * 0.47, 0.665, 1.905, B, false);
+    box(0.28, 0.13, 0.02, MAT.headlight, side * 0.47, 0.665, 1.915, B, false);
+    box(0.285, 0.135, 0.012, MAT.lens, side * 0.47, 0.665, 1.927, B, false);
+    box(0.13, 0.13, 0.02, MAT.amber, side * 0.715, 0.665, 1.905, B, false);
+  });
+  box(0.56, 0.135, 0.02, MAT.grille, 0, 0.665, 1.91, B, false);
+  for (let i = 0; i < 4; i++) box(0.56, 0.008, 0.01, MATX.trim, 0, 0.615 + i * 0.033, 1.922, B, false);
+  const vwTex = textTexture(128, 128, (g, w, h) => { g.fillStyle = '#e5e7eb'; g.beginPath(); g.arc(64, 64, 62, 0, 7); g.fill(); g.fillStyle = '#1f2937'; g.beginPath(); g.arc(64, 64, 52, 0, 7); g.fill(); g.strokeStyle = '#e5e7eb'; g.lineWidth = 9; g.beginPath(); g.moveTo(30, 36); g.lineTo(52, 92); g.lineTo(64, 60); g.lineTo(76, 92); g.lineTo(98, 36); g.stroke(); g.beginPath(); g.moveTo(44, 36); g.lineTo(64, 56); g.lineTo(84, 36); g.stroke(); });
+  mesh(new THREE.CircleGeometry(0.045, 32), std({ map: vwTex, metalness: 0.8, roughness: 0.25 }), 0, 0.665, 1.934, B, false, false);
+
+  /* --- Para-choques de impacto (pintura independente "bumpers") + frisos vermelhos --- */
+  const bump = (z, dir) => {
+    const g = new THREE.Group(); B.add(g);
+    const main = roundedBox(1.64, 0.17, 0.15, 0.035, MAT.paintBumpers, g, 2); main.position.set(0, 0.395, z);
+    [-1, 1].forEach(side => { const c = roundedBox(0.26, 0.17, 0.13, 0.035, MAT.paintBumpers, g, 2); c.position.set(side * 0.79, 0.395, z - dir * 0.1); c.rotation.y = side * dir * 0.62; });
+    box(1.5, 0.05, 0.02, MATX.trim, 0, 0.355, z + dir * 0.073, g, false);
+    CAR.frisos.push(box(1.52, 0.012, 0.006, MAT.redStripe, 0, 0.44, z + dir * 0.077, g, false));
+    return g;
+  };
+  P.bumpFront = bump(1.94, 1); P.bumpRear = bump(-1.945, -1);
+  box(0.16, 0.06, 0.02, MATX.trim, 0.42, 0.33, 2.02, B, false); // tomada de ar
+
+  /* --- Traseira: lanternas, placa, emblema --- */
+  [-1, 1].forEach(side => {
+    const g = new THREE.Group(); g.position.set(side * 0.56, 0.74, -1.915); B.add(g);
+    box(0.40, 0.18, 0.02, MATX.trim, 0, 0, 0, g, false);
+    box(0.17, 0.15, 0.02, MAT.tail, side * 0.1, 0, -0.008, g, false);
+    box(0.09, 0.15, 0.02, MAT.amber, -side * 0.035, 0, -0.008, g, false);
+    box(0.07, 0.15, 0.02, std({ color: 0xeeeeee, roughness: 0.15, metalness: 0.4 }), -side * 0.13, 0, -0.008, g, false);
+  });
+  const plateTex = textTexture(512, 160, (g, w, h) => { g.fillStyle = '#b8bcc2'; g.fillRect(0, 0, w, h); g.strokeStyle = '#111'; g.lineWidth = 8; g.strokeRect(6, 6, w - 12, h - 12); g.fillStyle = '#111'; g.font = 'bold 26px Inter, Arial'; g.textAlign = 'center'; g.fillText('SÃO PAULO - SP', w / 2, 40); g.font = 'bold 92px "Chakra Petch", Arial'; g.fillText('GOL-1994', w / 2, 132); });
+  mesh(new THREE.PlaneGeometry(0.40, 0.125), std({ map: plateTex, roughness: 0.5, metalness: 0.2 }), 0, 0.72, -1.917, B, false, false).rotation.y = Math.PI;
+  const golTex = textTexture(256, 64, (g, w, h) => { g.fillStyle = '#e5e7eb'; g.font = 'italic bold 46px "Chakra Petch", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('GOL GTS', w / 2, h / 2); });
+  mesh(new THREE.PlaneGeometry(0.2, 0.05), std({ map: golTex, transparent: true, metalness: 0.9, roughness: 0.2 }), -0.42, 0.88, -1.917, B, false, false).rotation.y = Math.PI;
+
+  /* --- Visual opcional: milhas Cibié, aerofólio GTS --- */
+  P.cibie = new THREE.Group(); B.add(P.cibie);
+  const cibieCover = textTexture(128, 128, (g, w, h) => { g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(64, 64, 63, 0, 7); g.fill(); g.fillStyle = '#facc15'; g.font = 'bold 26px "Chakra Petch", Arial'; g.textAlign = 'center'; g.fillText('CIBIÉ', 64, 74); });
+  [-1, 1].forEach(side => {
+    const g = new THREE.Group(); g.position.set(side * 0.42, 0.55, 1.97); P.cibie.add(g);
+    const shell = mesh(new THREE.CylinderGeometry(0.085, 0.07, 0.07, 28), MAT.chrome, 0, 0, 0, g); shell.rotation.x = Math.PI / 2;
+    const lens = mesh(new THREE.CircleGeometry(0.078, 28), std({ color: 0xfff7d6, emissive: 0xfff3c4, emissiveIntensity: 0.6, roughness: 0.1 }), 0, 0, 0.036, g, false, false);
+    const cover = mesh(new THREE.CircleGeometry(0.08, 28), std({ map: cibieCover, roughness: 0.5 }), 0, 0, 0.04, g, false, false); cover.visible = side > 0;
+    box(0.02, 0.06, 0.02, MAT.darkMetal, 0, -0.07, -0.01, g);
+  });
+  P.spoiler = new THREE.Group(); P.spoiler.position.set(0, 1.35, -1.45); B.add(P.spoiler);
+  const sp = roundedBox(1.26, 0.045, 0.22, 0.02, MAT.paintChassis, P.spoiler, 2); sp.rotation.x = 0.12;
+  [-0.5, 0.5].forEach(x => box(0.04, 0.04, 0.1, MATX.trim, x, -0.02, 0.04, P.spoiler));
+
+  buildEngineBay();
+  buildExhaust();
+}
+
+/* ---------------------------------------------------------------------
+   Cofre AP longitudinal: bloco inclinado 15°, tampa de válvulas azul, polias…
+   --------------------------------------------------------------------- */
+function buildEngineBay() {
+  const B = CAR.body, P = CAR.parts;
+  const eng = new THREE.Group(); eng.position.set(0.02, 0.43, 1.2); eng.rotation.z = -15 * Math.PI / 180; B.add(eng); P.engine = eng;
+  box(0.24, 0.28, 0.44, MAT.engineBlock, 0, 0, 0, eng);
+  box(0.2, 0.08, 0.40, MAT.alu, 0, -0.18, 0, eng); // cárter
+  box(0.22, 0.08, 0.44, MAT.alu, 0, 0.18, 0, eng); // cabeçote
+  const vc = roundedBox(0.2, 0.06, 0.42, 0.02, MAT.blueValve, eng, 2); vc.position.set(0, 0.25, 0);
+  for (let i = 0; i < 6; i++) cyl(0.008, 0.008, 0.01, MAT.chrome, (i % 2 ? 0.08 : -0.08), 0.282, -0.18 + Math.floor(i / 2) * 0.18, eng, 8);
+  cyl(0.022, 0.022, 0.02, MATX.trim, 0.04, 0.29, 0.12, eng, 14); // tampa do óleo
+  const apTex = textTexture(256, 64, (g, w, h) => { g.fillStyle = '#e5e7eb'; g.font = 'bold 40px "Chakra Petch", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('AP 1.8', w / 2, h / 2); });
+  const lbl = mesh(new THREE.PlaneGeometry(0.13, 0.032), std({ map: apTex, transparent: true, roughness: 0.4 }), 0, 0.281, -0.05, eng, false, false); lbl.rotation.x = -Math.PI / 2; lbl.rotation.z = Math.PI;
+  // Velas e cabos
+  const wireMat = std({ color: 0x991b1b, roughness: 0.5 });
+  for (let i = 0; i < 4; i++) { const z = -0.15 + i * 0.1; tube([[-0.11, 0.24, z], [-0.17, 0.27, z - 0.02], [-0.2, 0.2, -0.24 + i * 0.01], [-0.12, 0.1, -0.26]], 0.006, wireMat, eng, 16, 6); }
+  // Distribuidor (traseira do cabeçote)
+  const dist = new THREE.Group(); dist.position.set(-0.11, 0.08, -0.26); eng.add(dist);
+  cyl(0.03, 0.035, 0.12, MAT.alu, 0, 0, 0, dist, 16); cyl(0.045, 0.04, 0.05, MATX.trim, 0, 0.07, 0, dist, 16);
+  // Frente: capa da correia dentada / polia SamCams, polias, correia, alternador
+  P.timingCover = box(0.16, 0.24, 0.03, MATX.trim, 0, 0.1, 0.235, eng);
+  P.samcams = new THREE.Group(); P.samcams.position.set(0, 0.17, 0.245); eng.add(P.samcams);
+  const camP = mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.022, 32), MAT.gold, 0, 0, 0, P.samcams); camP.rotation.x = Math.PI / 2;
+  for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; const h = mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.024, 12), MATX.hole, Math.cos(a) * 0.04, Math.sin(a) * 0.04, 0.001, P.samcams, false); h.rotation.x = Math.PI / 2; }
+  const ctr = mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.03, 14), MAT.red, 0, 0, 0.005, P.samcams); ctr.rotation.x = Math.PI / 2;
+  box(0.16, 0.12, 0.03, MATX.trim, 0, 0.0, 0.235, P.samcams).position.set(0, -0.12, -0.01);
+  const pul = (r, x, y, z, m = MAT.darkMetal) => { const p = mesh(new THREE.CylinderGeometry(r, r, 0.03, 28), m, x, y, z, eng); p.rotation.x = Math.PI / 2; return p; };
+  pul(0.065, 0, -0.1, 0.25); pul(0.045, 0.06, 0.02, 0.255);
+  const alt = new THREE.Group(); alt.position.set(0.19, -0.02, 0.16); eng.add(alt);
+  const altB = mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.12, 22), MAT.alu, 0, 0, 0, alt); altB.rotation.x = Math.PI / 2;
+  const altP = mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.025, 18), MAT.darkMetal, 0, 0, 0.075, alt); altP.rotation.x = Math.PI / 2;
+  tube([[0, -0.1, 0.27], [0.12, -0.08, 0.27], [0.19, -0.02, 0.255], [0.1, 0.05, 0.27], [0.06, 0.06, 0.27], [-0.05, -0.02, 0.27], [0, -0.1, 0.27]], 0.006, MATX.trim, eng, 40, 5);
+  // Coletor de admissão (lado esquerdo) com dutos
+  for (let i = 0; i < 4; i++) { const z = -0.15 + i * 0.1; tube([[-0.11, 0.12, z], [-0.17, 0.16, z], [-0.2, 0.22, z * 0.5]], 0.018, MAT.alu, eng, 10, 8); }
+  box(0.08, 0.04, 0.32, MAT.alu, -0.2, 0.235, 0, eng);
+
+  /* Alimentação (exclusivos: Brosol 2E | Weber 40 IDF | FuelTech FT450) */
+  P.brosol = new THREE.Group(); P.brosol.position.set(-0.2, 0.255, 0); eng.add(P.brosol);
+  box(0.1, 0.06, 0.1, MAT.alu, 0, 0.03, 0, P.brosol);
+  cyl(0.15, 0.15, 0.05, MATX.trim, 0, 0.085, 0, P.brosol, 32); cyl(0.12, 0.12, 0.052, MAT.chrome, 0, 0.085, 0, P.brosol, 32);
+  cyl(0.03, 0.03, 0.06, MAT.chrome, 0, 0.1, 0, P.brosol, 12);
+  const snorkel = mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.16, 14), MATX.trim, 0.0, 0.085, 0.2, P.brosol); snorkel.rotation.x = Math.PI / 2;
+  P.weber = new THREE.Group(); P.weber.position.set(-0.2, 0.255, 0); eng.add(P.weber);
+  const trumpet = [[0.022, 0], [0.022, 0.03], [0.026, 0.05], [0.036, 0.065], [0.042, 0.07]];
+  [-0.1, 0.1].forEach(z => {
+    box(0.1, 0.07, 0.13, MAT.alu, 0, 0.035, z, P.weber);
+    box(0.02, 0.03, 0.02, MAT.gold, 0.06, 0.04, z, P.weber);
+    [-0.033, 0.033].forEach(dz => { const t = lathe(trumpet, MAT.chrome, P.weber, 24); t.position.set(0, 0.07, z + dz); t.material.side = THREE.DoubleSide; });
+  });
+  P.fueltech = new THREE.Group(); P.fueltech.position.set(-0.2, 0.255, 0); eng.add(P.fueltech);
+  box(0.1, 0.08, 0.36, MAT.alu, 0, 0.04, 0, P.fueltech);
+  const tb = mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.08, 20), MAT.alu, 0, 0.04, 0.22, P.fueltech); tb.rotation.x = Math.PI / 2;
+  box(0.03, 0.02, 0.34, MAT.red, 0.06, 0.0, 0, P.fueltech);
+  for (let i = 0; i < 4; i++) cyl(0.008, 0.008, 0.04, MATX.trim, 0.07, -0.03, -0.15 + i * 0.1, P.fueltech, 8);
+  const ftTag = textTexture(256, 64, (g, w, h) => { g.fillStyle = '#f97316'; g.font = 'bold 40px "Chakra Petch", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FUELTECH', w / 2, h / 2); });
+  const ftl = mesh(new THREE.PlaneGeometry(0.2, 0.05), std({ map: ftTag, transparent: true }), 0, 0.081, 0, P.fueltech, false, false); ftl.rotation.x = -Math.PI / 2; ftl.rotation.z = Math.PI / 2;
+
+  /* Comando SamCams 276° (polia exposta), forjados SPA (placa + catch can), strut bar */
+  P.forged = new THREE.Group(); B.add(P.forged);
+  const spaTex = textTexture(256, 96, (g, w, h) => { g.fillStyle = '#111827'; g.fillRect(0, 0, w, h); g.strokeStyle = '#eab308'; g.lineWidth = 6; g.strokeRect(3, 3, w - 6, h - 6); g.fillStyle = '#eab308'; g.font = 'bold 34px "Chakra Petch", Arial'; g.textAlign = 'center'; g.fillText('SPA FORJADO', w / 2, 44); g.fillStyle = '#e5e7eb'; g.font = '20px Inter, Arial'; g.fillText('pistões + bielas H', w / 2, 76); });
+  const spa = mesh(new THREE.PlaneGeometry(0.16, 0.06), std({ map: spaTex, roughness: 0.4, metalness: 0.3 }), 0.122, 0.0, 0, eng, false, false); spa.rotation.y = Math.PI / 2; P.forgedPlate = spa;
+  cyl(0.04, 0.04, 0.16, MATX.inox, -0.48, 0.55, 0.85, P.forged, 20); cyl(0.042, 0.042, 0.02, MAT.red, -0.48, 0.64, 0.85, P.forged, 20);
+  tube([[-0.48, 0.64, 0.85], [-0.35, 0.74, 0.95], [-0.15, 0.72, 1.05]], 0.009, std({ color: 0x9ca3af, metalness: 0.9, roughness: 0.4 }), P.forged, 20, 6);
+  P.strutBar = new THREE.Group(); B.add(P.strutBar);
+  const bar = mesh(new THREE.CylinderGeometry(0.018, 0.018, 1.06, 18), MAT.chrome, 0, 0.815, 1.18, P.strutBar); bar.rotation.z = Math.PI / 2;
+  [-1, 1].forEach(s => { box(0.12, 0.012, 0.14, MAT.chrome, s * 0.55, 0.8, 1.18, P.strutBar); cyl(0.028, 0.028, 0.05, MAT.red, s * 0.42, 0.815, 1.18, P.strutBar, 14).rotation.z = Math.PI / 2; });
+
+  /* Turbo Master Power .50 com filtro cônico e pressurização */
+  P.turbo = new THREE.Group(); B.add(P.turbo);
+  const tg0 = new THREE.Group(); tg0.position.set(0.40, 0.56, 1.36); P.turbo.add(tg0);
+  const hot = mesh(new THREE.TorusGeometry(0.06, 0.035, 14, 28), MAT.turboHot, 0.04, 0, 0, tg0); hot.rotation.y = Math.PI / 2;
+  const cmpH = mesh(new THREE.TorusGeometry(0.058, 0.03, 14, 28), MAT.alu, -0.06, 0, 0, tg0); cmpH.rotation.y = Math.PI / 2;
+  cyl(0.04, 0.04, 0.08, MAT.darkMetal, -0.01, 0, 0, tg0, 18).rotation.z = Math.PI / 2;
+  const mpTex = textTexture(256, 64, (g, w, h) => { g.fillStyle = '#e5e7eb'; g.font = 'bold 34px "Chakra Petch", Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('MASTER POWER .50', w / 2, h / 2); });
+  const mpl = mesh(new THREE.PlaneGeometry(0.11, 0.028), std({ map: mpTex, transparent: true }), -0.095, 0.0, 0, tg0, false, false); mpl.rotation.y = -Math.PI / 2;
+  const cone = mesh(new THREE.CylinderGeometry(0.045, 0.085, 0.17, 24), MAT.filterRed, -0.06, 0.0, 0.17, tg0); cone.rotation.x = Math.PI / 2;
+  cyl(0.088, 0.088, 0.015, MAT.chrome, -0.06, 0, 0.255, tg0, 24).rotation.x = Math.PI / 2;
+  tube([[0.34, 0.6, 1.36], [0.28, 0.72, 1.5], [0.0, 0.78, 1.58], [-0.2, 0.74, 1.5], [-0.26, 0.69, 1.42]], 0.028, MATX.inox, P.turbo, 40, 12);
+  cyl(0.025, 0.025, 0.05, MAT.blueValve, 0.12, 0.8, 1.57, P.turbo, 14); // válvula de prioridade
+  tube([[0.17, 0.48, 1.05], [0.3, 0.5, 1.15], [0.42, 0.52, 1.3]], 0.03, MAT.turboHot, P.turbo, 20, 10);
+  tube([[0.46, 0.5, 1.33], [0.5, 0.35, 1.2], [0.35, 0.22, 0.9], [0.18, 0.2, 0.6]], 0.03, MATX.inox, P.turbo, 24, 10);
+
+  /* Coletores de escape no cofre (dependem do escape escolhido) */
+  P.headers = {};
+  const header = (mat, key) => {
+    const g = new THREE.Group(); eng.add(g); P.headers[key] = g;
+    if (key === 'exh_original') { box(0.05, 0.06, 0.38, mat, 0.16, 0.06, 0, g); for (let i = 0; i < 4; i++) box(0.04, 0.04, 0.04, mat, 0.13, 0.1, -0.15 + i * 0.1, g); tube([[0.18, 0.04, 0], [0.24, -0.15, 0.02], [0.2, -0.32, -0.1]], 0.026, mat, g, 12, 8); return g; }
+    for (let i = 0; i < 4; i++) { const z = -0.15 + i * 0.1; tube([[0.12, 0.1, z], [0.2, 0.08, z * 0.9], [0.25, -0.05, z * 0.4], [0.24, -0.22, 0.0]], 0.017, mat, g, 18, 8); }
+    tube([[0.24, -0.22, 0], [0.22, -0.3, -0.05], [0.18, -0.34, -0.2]], 0.026, mat, g, 12, 8);
+    return g;
+  };
+  header(MAT.castIron, 'exh_original'); header(MAT.heatPaint, 'exh_4x1_carbon'); header(MATX.inox, 'exh_4x1_inox'); header(std({ color: 0xc2a27a, metalness: 0.9, roughness: 0.35 }), 'exh_barenwald');
+
+  // Radiador, ventoinha, bateria, reservatórios, servo-freio
+  box(0.66, 0.36, 0.05, std({ color: 0x1f2328, metalness: 0.6, roughness: 0.5, map: TEX.grille }), 0, 0.55, 1.76, B);
+  const fan = mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.04, 24, 1, true), MATX.bayDS, 0, 0.55, 1.71, B); fan.rotation.x = Math.PI / 2;
+  const batt = new THREE.Group(); batt.position.set(-0.47, 0.5, 0.82); B.add(batt);
+  box(0.2, 0.18, 0.14, MATX.trim, 0, 0, 0, batt); cyl(0.012, 0.012, 0.03, MAT.red, 0.06, 0.1, 0.03, batt, 10); cyl(0.012, 0.012, 0.03, MATX.trim, -0.06, 0.1, 0.03, batt, 10);
+  box(0.21, 0.01, 0.15, std({ color: 0xeab308, roughness: 0.5 }), 0, 0.06, 0, batt, false);
+  cyl(0.05, 0.05, 0.1, std({ color: 0xe7e5e4, roughness: 0.3, transparent: true, opacity: 0.85 }), 0.47, 0.58, 0.9, B, 18);
+  cyl(0.035, 0.035, 0.03, MATX.trim, 0.47, 0.645, 0.9, B, 14);
+  const booster = mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.08, 24), MAT.darkMetal, 0.36, 0.66, 0.66, B); booster.rotation.x = Math.PI / 2;
+  cyl(0.025, 0.025, 0.06, std({ color: 0xd6d3d1, roughness: 0.4 }), 0.36, 0.74, 0.74, B, 12);
+  tube([[0.3, 0.58, 1.02], [0.2, 0.65, 1.3], [0.05, 0.62, 1.62], [-0.05, 0.55, 1.72]], 0.016, MAT.hose, B, 24, 6);
+}
+
+/* ---------------------------------------------------------------------
+   Escapamento sob o carro e ponteiras (vista "Escapamento")
+   --------------------------------------------------------------------- */
+function buildExhaust() {
+  const B = CAR.body, P = CAR.parts; P.tails = {};
+  tube([[0.17, 0.2, 0.9], [0.18, 0.17, 0.4], [0.2, 0.17, -0.6], [0.24, 0.18, -1.2]], 0.024, MAT.darkMetal, B, 30, 8);
+  const mk = key => { const g = new THREE.Group(); B.add(g); P.tails[key] = g; return g; };
+  let g = mk('exh_original');
+  box(0.42, 0.13, 0.24, MAT.darkMetal, 0.26, 0.2, -1.5, g);
+  tube([[0.4, 0.2, -1.62], [0.44, 0.2, -1.84], [0.45, 0.17, -1.9]], 0.02, MAT.darkMetal, g, 12, 8);
+  g = mk('exh_4x1_carbon');
+  const m2 = mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.42, 24), MAT.heatPaint, 0.26, 0.2, -1.5, g); m2.rotation.z = Math.PI / 2; m2.scale.set(1, 1, 0.7);
+  tube([[0.42, 0.2, -1.55], [0.45, 0.21, -1.8], [0.45, 0.22, -1.93]], 0.024, MAT.chrome, g, 12, 10);
+  g = mk('exh_4x1_inox');
+  const m3 = mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.44, 28), MATX.inox, 0.26, 0.2, -1.5, g); m3.rotation.z = Math.PI / 2; m3.scale.set(1, 1, 0.7);
+  tube([[0.43, 0.21, -1.55], [0.45, 0.23, -1.8]], 0.024, MATX.inox, g, 10, 10);
+  const tip = mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.16, 28, 1, true), MAT.chrome, 0.45, 0.235, -1.88, g); tip.rotation.x = Math.PI / 2 - 0.08; tip.material = MAT.chrome.clone(); tip.material.side = THREE.DoubleSide;
+  mesh(new THREE.CircleGeometry(0.03, 20), MATX.hole, 0.45, 0.235, -1.955, g, false, false).rotation.y = Math.PI;
+  g = mk('exh_barenwald');
+  tube([[0.24, 0.18, -1.2], [0.45, 0.19, -1.5], [0.66, 0.2, -1.62]], 0.034, std({ color: 0xc2a27a, metalness: 0.9, roughness: 0.35 }), g, 16, 10);
+  const sideTip = mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.12, 28, 1, true), MAT.chrome.clone(), 0.72, 0.2, -1.63, g); sideTip.rotation.z = Math.PI / 2; sideTip.material.side = THREE.DoubleSide;
+}
+
+/* ---------------------------------------------------------------------
+   Rodas: aço 13 | Pingo d'Água 14 | Orbital 15/17 | BBS RS 17 + disco e pinça
+   Grupo local com eixo em Z (face externa em +Z)
+   --------------------------------------------------------------------- */
+function buildWheel(item) {
+  const g = new THREE.Group();
+  const rr = item.rim * 0.0127, w = item.tireW, R = item.tireR, fz = w * 0.28;
+  const tire = mesh(makeTireGeometry(R, w, rr * 1.02), MAT.tire, 0, 0, 0, g); tire.name = 'tire';
+  if (!MATX.barrel) MATX.barrel = std({ color: 0x9ca3af, metalness: 0.9, roughness: 0.4, side: THREE.DoubleSide });
+  const barrel = new THREE.CylinderGeometry(rr, rr, w * 0.92, 36, 1, true); barrel.rotateX(Math.PI / 2);
+  mesh(barrel, MATX.barrel, 0, 0, 0, g);
+  const faceDisc = (r, z, mat) => { const d = mesh(new THREE.CylinderGeometry(r, r, 0.012, 40), mat, 0, 0, z, g); d.rotation.x = Math.PI / 2; return d; };
+  const lip = (z, mat = MAT.chrome, t = 0.008) => mesh(new THREE.TorusGeometry(rr * 0.99, t, 8, 48), mat, 0, 0, z, g);
+  const lugs = (r, n, mat, z) => { const gs = []; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; gs.push(tg(new THREE.CylinderGeometry(0.009, 0.009, 0.018, 8), Math.cos(a) * r, Math.sin(a) * r, z, Math.PI / 2)); } return mesh(mergeGeos(gs), mat, 0, 0, 0, g, false); };
+  if (item.style === 'steel') {
+    faceDisc(rr * 0.98, fz, MAT.paintWheels);
+    const vs = []; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; vs.push(tg(new THREE.BoxGeometry(0.045, 0.02, 0.004), Math.cos(a) * rr * 0.66, Math.sin(a) * rr * 0.66, fz + 0.007, 0, 0, a + Math.PI / 2)); }
+    mesh(mergeGeos(vs), MATX.hole, 0, 0, 0, g, false);
+    const cap = mesh(new THREE.SphereGeometry(rr * 0.42, 28, 10, 0, Math.PI * 2, 0, Math.PI / 2), MAT.chrome, 0, 0, fz, g); cap.rotation.x = Math.PI / 2; cap.scale.set(1, 0.32, 1);
+    lip(fz + 0.004, MAT.paintWheels, 0.01);
+  } else if (item.style === 'pingo') {
+    faceDisc(rr * 0.97, fz, MAT.paintWheels);
+    const s = new THREE.Shape(); s.moveTo(0, -0.045); s.quadraticCurveTo(0.024, -0.012, 0.022, 0.004); s.absarc(0, 0.004, 0.022, 0, Math.PI, false); s.quadraticCurveTo(-0.024, -0.012, 0, -0.045);
+    const k = rr / 0.165, ds = [];
+    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; const dg = new THREE.ExtrudeGeometry(s, { depth: 0.004, bevelEnabled: false }); dg.scale(k * 1.15, k * 1.4, 1); ds.push(tg(dg, Math.cos(a) * rr * 0.6, Math.sin(a) * rr * 0.6, fz + 0.005, 0, 0, a - Math.PI / 2)); }
+    mesh(mergeGeos(ds), MATX.hole, 0, 0, 0, g, false);
+    faceDisc(rr * 0.3, fz + 0.006, MAT.paintWheels);
+    lugs(rr * 0.2, 4, MAT.chrome, fz + 0.014);
+    const cap = mesh(new THREE.CylinderGeometry(rr * 0.12, rr * 0.12, 0.012, 24), MAT.chrome, 0, 0, fz + 0.016, g); cap.rotation.x = Math.PI / 2;
+    lip(fz + 0.006, MAT.chrome, 0.009);
+  } else if (item.style === 'orbital') {
+    faceDisc(rr * 0.97, fz, MAT.paintWheels);
+    mesh(new THREE.TorusGeometry(rr * 0.5, 0.008, 8, 48), MAT.chrome, 0, 0, fz + 0.007, g);
+    const hs = []; for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; hs.push(tg(new THREE.CylinderGeometry(rr * 0.11, rr * 0.11, 0.004, 18), Math.cos(a) * rr * 0.73, Math.sin(a) * rr * 0.73, fz + 0.005, Math.PI / 2)); }
+    mesh(mergeGeos(hs), MATX.hole, 0, 0, 0, g, false);
+    lugs(rr * 0.22, 4, MAT.chrome, fz + 0.012);
+    const cap = mesh(new THREE.CylinderGeometry(rr * 0.13, rr * 0.13, 0.015, 24), MAT.chrome, 0, 0, fz + 0.012, g); cap.rotation.x = Math.PI / 2;
+    const ring = new THREE.RingGeometry(rr * 0.86, rr * 1.0, 48); mesh(ring, MAT.chrome, 0, 0, fz + 0.012, g, false);
+    lip(fz + 0.012, MAT.chrome, 0.01);
+  } else { // BBS RS: aro polido profundo + raios cruzados + parafusos dourados
+    const fz2 = fz - 0.04;
+    faceDisc(rr * 0.82, fz2 - 0.008, MATX.hole);
+    mesh(new THREE.RingGeometry(rr * 0.8, rr * 1.0, 48), MAT.chrome, 0, 0, fz + 0.012, g, false);
+    const dish = new THREE.CylinderGeometry(rr * 0.81, rr * 0.81, 0.052, 40, 1, true); dish.rotateX(Math.PI / 2); mesh(dish, MAT.chrome, 0, 0, fz - 0.014, g);
+    const sp = [];
+    for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; [-0.32, 0.32].forEach(o => { const L = rr * 0.6; sp.push(tg(new THREE.BoxGeometry(L, 0.011, 0.012), Math.cos(a) * rr * 0.52, Math.sin(a) * rr * 0.52, fz2, 0, 0, a + o)); }); }
+    mesh(mergeGeos(sp), MAT.paintWheels, 0, 0, 0, g);
+    const bolts = []; for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2; bolts.push(tg(new THREE.CylinderGeometry(0.0055, 0.0055, 0.012, 6), Math.cos(a) * rr * 0.9, Math.sin(a) * rr * 0.9, fz + 0.016, Math.PI / 2)); }
+    mesh(mergeGeos(bolts), MAT.gold, 0, 0, 0, g, false);
+    const hub = mesh(new THREE.CylinderGeometry(rr * 0.24, rr * 0.27, 0.03, 28), MAT.paintWheels, 0, 0, fz2 + 0.01, g); hub.rotation.x = Math.PI / 2;
+    const bbsTex = textTexture(128, 128, (c, W, H) => { c.fillStyle = '#111'; c.beginPath(); c.arc(64, 64, 63, 0, 7); c.fill(); c.fillStyle = '#e5e7eb'; c.font = 'bold 40px Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('BBS', 64, 66); });
+    mesh(new THREE.CircleGeometry(rr * 0.14, 24), std({ map: bbsTex, roughness: 0.3, metalness: 0.5 }), 0, 0, fz2 + 0.027, g, false, false);
+    lugs(rr * 0.18, 4, MAT.chrome, fz2 + 0.03);
+  }
+  g.userData.rr = rr; g.userData.R = R; g.userData.w = w;
+  return g;
+}
+function buildBrake(rr, w, side, front) {
+  const g = new THREE.Group();
+  const disc = mesh(new THREE.CylinderGeometry(rr * 0.8, rr * 0.8, 0.022, 36), MAT.disc, 0, 0, -w * 0.12, g); disc.rotation.x = Math.PI / 2;
+  const hat = mesh(new THREE.CylinderGeometry(rr * 0.35, rr * 0.35, 0.03, 24), MAT.darkMetal, 0, 0, -w * 0.1, g); hat.rotation.x = Math.PI / 2;
+  // Pinça na parte de trás-superior da roda (eixo local X depende do lado)
+  const cal = roundedBox(0.09, 0.13, 0.05, 0.015, front ? MAT.caliper : MAT.darkMetal, g, 2);
+  const a = Math.PI * 0.62, r = rr * 0.72;
+  cal.position.set(side * Math.cos(Math.PI - a) * -r, Math.sin(a) * r, -w * 0.12); cal.rotation.z = side * (a - Math.PI / 2) * -1;
+  return g;
+}
+function rebuildWheels() {
+  const it = ITEM[CONFIG.sel.wheels]; if (!it) return;
+  CAR.wheels.forEach(w => { CAR.proc.remove(w); });
+  CAR.wheels = [];
+  const proto = buildWheel(it);
+  [[1, CAR.FRONT_AXLE, true], [-1, CAR.FRONT_AXLE, true], [1, CAR.REAR_AXLE, false], [-1, CAR.REAR_AXLE, false]].forEach(([side, z, front]) => {
+    const holder = new THREE.Group(); holder.position.set(side * CAR.TRACK, it.tireR, z); holder.rotation.y = side * Math.PI / 2;
+    const wheel = proto.clone(); holder.add(wheel); holder.add(buildBrake(proto.userData.rr, it.tireW, side, front));
+    holder.userData.spin = wheel; CAR.proc.add(holder); CAR.wheels.push(holder);
+  });
+  CAR.wheelKey = it.id;
+}
+
+/* ---------------------------------------------------------------------
+   Aplica a configuração (peças, rodas, suspensão, pintura)
+   --------------------------------------------------------------------- */
+const HOOKS = { afterApply: [] };
+function applyConfig() {
+  const P = CAR.parts, ex = CONFIG.sel.exhaust, turbo = isOn('turbo_masterpower');
+  P.brosol.visible = isOn('carb_brosol2e'); P.weber.visible = isOn('weber_40idf'); P.fueltech.visible = isOn('fueltech_ft450');
+  P.ftDisplay.visible = isOn('fueltech_ft450');
+  P.turbo.visible = turbo;
+  P.samcams.visible = isOn('samcams_276'); P.timingCover.visible = !isOn('samcams_276');
+  P.forged.visible = isOn('forged_internals'); P.forgedPlate.visible = isOn('forged_internals');
+  P.strutBar.visible = isOn('strut_bar');
+  Object.entries(P.headers).forEach(([k, g]) => g.visible = !turbo && k === ex);
+  Object.entries(P.tails).forEach(([k, g]) => g.visible = k === ex);
+  P.cibie.visible = isOn('vis_cibie'); P.spoiler.visible = isOn('vis_aerofolio');
+  CAR.frisos.forEach(f => f.visible = isOn('vis_frisos'));
+  if (CAR.wheelKey !== CONFIG.sel.wheels) rebuildWheels();
+  CAR.bodyTargetY = (ITEM[CONFIG.sel.suspension] || {}).deltaY || 0;
+  MAT.paintChassis.color.set(CONFIG.colors.chassis); MAT.paintBonnet.color.set(CONFIG.colors.bonnet);
+  MAT.paintBumpers.color.set(CONFIG.colors.bumpers); MAT.paintWheels.color.set(CONFIG.colors.wheels);
+  HOOKS.afterApply.forEach(fn => { try { fn(); } catch (e) { console.warn(e); } });
+}
+
+buildGolQuadrado3D();
+applyConfig();
+
+
+
+/* =====================================================================
+   7. IMPORTAÇÃO DE MODELOS 3D — sem conversão
+   .DFF/.TXD (RenderWare / GTA SA) · .GLB/.GLTF · .OBJ+.MTL · .ZIP
+   ===================================================================== */
+const RW = { STRUCT: 0x01, STRING: 0x02, EXT: 0x03, TEXTURE: 0x06, MATERIAL: 0x07, MATLIST: 0x08, FRAMELIST: 0x0E, GEOMETRY: 0x0F, CLUMP: 0x10, ATOMIC: 0x14, TEXNATIVE: 0x15, TEXDICT: 0x16, GEOLIST: 0x1A, BINMESH: 0x50E, FRAMENAME: 0x0253F2FE };
+function rwVersion(lib) { return (lib & 0xFFFF0000) ? (((lib >>> 14) & 0x3FF00) + 0x30000) | ((lib >>> 16) & 0x3F) : (lib << 8); }
+class RWReader {
+  constructor(buf) { this.dv = new DataView(buf); this.buf = buf; this.u8 = new Uint8Array(buf); }
+  header(o) {
+    if (o + 12 > this.dv.byteLength) throw new Error('Arquivo truncado (cabeçalho RenderWare incompleto).');
+    const lib = this.dv.getUint32(o + 8, true);
+    return { type: this.dv.getUint32(o, true), size: this.dv.getUint32(o + 4, true), lib, ver: rwVersion(lib), data: o + 12, end: o + 12 + this.dv.getUint32(o + 4, true) };
+  }
+  children(c) { const out = []; let o = c.data; while (o + 12 <= c.end) { const h = this.header(o); if (h.end > c.end + 4 || h.size > this.dv.byteLength) break; out.push(h); o = h.end; } return out; }
+  find(c, type) { return this.children(c).find(h => h.type === type); }
+  str(o, len) { let s = ''; for (let i = 0; i < len; i++) { const ch = this.u8[o + i]; if (!ch) break; s += String.fromCharCode(ch); } return s; }
+  f32(o) { return this.dv.getFloat32(o, true); } i32(o) { return this.dv.getInt32(o, true); } u32(o) { return this.dv.getUint32(o, true); } u16(o) { return this.dv.getUint16(o, true); }
+}
+
+/* ---------- .DFF → estrutura neutra (frames, geometrias, atomics) ---------- */
+function parseDFFBinary(buffer) {
+  const R = new RWReader(buffer);
+  let o = 0, clump = null;
+  while (o + 12 <= buffer.byteLength) { const h = R.header(o); if (h.type === RW.CLUMP) { clump = h; break; } if (h.size <= 0) break; o = h.end; }
+  if (!clump) throw new Error('Não encontrei um Clump RenderWare (0x10). O arquivo é mesmo um .DFF?');
+  const out = { version: clump.ver, frames: [], geometries: [], atomics: [] };
+  const kids = R.children(clump);
+  // FrameList
+  const fl = kids.find(k => k.type === RW.FRAMELIST);
+  if (fl) {
+    const fk = R.children(fl), st = fk.find(k => k.type === RW.STRUCT);
+    const n = R.i32(st.data);
+    for (let i = 0; i < n; i++) {
+      const b = st.data + 4 + i * 56, m = [];
+      for (let j = 0; j < 12; j++) m.push(R.f32(b + j * 4));
+      out.frames.push({ rot: m.slice(0, 9), pos: m.slice(9, 12), parent: R.i32(b + 48), name: '' });
+    }
+    fk.filter(k => k.type === RW.EXT).forEach((ext, i) => {
+      if (!out.frames[i]) return;
+      R.children(ext).forEach(e => { if (e.type === RW.FRAMENAME) out.frames[i].name = R.str(e.data, e.size); });
+    });
+  }
+  // GeometryList
+  const gl = kids.find(k => k.type === RW.GEOLIST);
+  if (gl) R.children(gl).filter(k => k.type === RW.GEOMETRY).forEach(g => out.geometries.push(parseRWGeometry(R, g)));
+  // Atomics
+  kids.filter(k => k.type === RW.ATOMIC).forEach(a => {
+    const st = R.find(a, RW.STRUCT); if (!st) return;
+    out.atomics.push({ frame: R.i32(st.data), geometry: R.i32(st.data + 4), flags: st.size >= 12 ? R.u32(st.data + 8) : 5 });
+  });
+  if (!out.geometries.length) throw new Error('O .DFF não contém geometrias legíveis.');
+  return out;
+}
+function parseRWGeometry(R, g) {
+  const st = R.find(g, RW.STRUCT); if (!st) throw new Error('Geometria sem Struct.');
+  const ver = st.ver; let p = st.data;
+  const format = R.u32(p), flags = format & 0xFFFF; let numUV = (format >>> 16) & 0xFF;
+  const numTris = R.i32(p + 4), numVerts = R.i32(p + 8), numMorph = R.i32(p + 12); p += 16;
+  if (format & 0x01000000) throw new Error('Geometria nativa de console (PS2/Xbox) não suportada — use o .DFF da versão PC.');
+  if (ver < 0x34000) p += 12; // ambient, specular, diffuse
+  if (!numUV) numUV = (flags & 0x80) ? 2 : (flags & 0x04) ? 1 : 0;
+  const geo = { numVerts, flags, uv: null, tris: [], pos: null, nrm: null, materials: [] };
+  if (flags & 0x08) p += numVerts * 4; // prelit colors
+  for (let s = 0; s < numUV; s++) { if (s === 0) { geo.uv = new Float32Array(numVerts * 2); for (let i = 0; i < numVerts * 2; i++) geo.uv[i] = R.f32(p + i * 4); } p += numVerts * 8; }
+  for (let i = 0; i < numTris; i++) { const a = R.u16(p), b = R.u16(p + 2), c = R.u16(p + 4), m = R.u16(p + 6); geo.tris.push(b, a, c, m); p += 8; }
+  for (let mt = 0; mt < Math.max(1, numMorph); mt++) {
+    if (p + 24 > st.end) break;
+    const hasV = R.i32(p + 16), hasN = R.i32(p + 20); p += 24;
+    if (hasV) { if (mt === 0) { geo.pos = new Float32Array(numVerts * 3); for (let i = 0; i < numVerts * 3; i++) geo.pos[i] = R.f32(p + i * 4); } p += numVerts * 12; }
+    if (hasN) { if (mt === 0) { geo.nrm = new Float32Array(numVerts * 3); for (let i = 0; i < numVerts * 3; i++) geo.nrm[i] = R.f32(p + i * 4); } p += numVerts * 12; }
+  }
+  // MaterialList
+  const ml = R.find(g, RW.MATLIST);
+  if (ml) {
+    const mk = R.children(ml), ms = mk.find(k => k.type === RW.STRUCT);
+    const count = ms ? R.i32(ms.data) : 0, idx = [];
+    for (let i = 0; i < count; i++) idx.push(R.i32(ms.data + 4 + i * 4));
+    const mats = mk.filter(k => k.type === RW.MATERIAL).map(m => {
+      const s = R.find(m, RW.STRUCT); const d = s.data;
+      const mat = { color: [R.u8[d + 4], R.u8[d + 5], R.u8[d + 6], R.u8[d + 7]], texture: '', mask: '' };
+      const tx = R.find(m, RW.TEXTURE);
+      if (tx) { const strs = R.children(tx).filter(k => k.type === RW.STRING); if (strs[0]) mat.texture = R.str(strs[0].data, strs[0].size); if (strs[1]) mat.mask = R.str(strs[1].data, strs[1].size); }
+      return mat;
+    });
+    let u = 0; geo.materials = idx.map(i => i < 0 ? mats[u++] : null).map((m, i, arr) => m || arr[idx[i]] || mats[0] || { color: [200, 200, 200, 255], texture: '' });
+  }
+  if (!geo.materials.length) geo.materials = [{ color: [200, 200, 200, 255], texture: '' }];
+  // Sem lista de triângulos? tenta o BinMesh PLG (strips/listas)
+  if (!geo.tris.length) {
+    const ext = R.find(g, RW.EXT), bm = ext && R.find(ext, RW.BINMESH);
+    if (bm) {
+      let q = bm.data; const strip = R.u32(q) & 1, n = R.u32(q + 4); q += 12;
+      for (let k = 0; k < n; k++) {
+        const ni = R.u32(q), mi = R.u32(q + 4); q += 8; const ids = []; for (let i = 0; i < ni; i++) ids.push(R.u32(q + i * 4)); q += ni * 4;
+        if (strip) { for (let i = 0; i + 2 < ni; i++) { const a = ids[i], b = ids[i + 1], c = ids[i + 2]; if (a === b || b === c || a === c) continue; i % 2 ? geo.tris.push(b, a, c, mi) : geo.tris.push(a, b, c, mi); } }
+        else for (let i = 0; i + 2 < ni; i += 3) geo.tris.push(ids[i], ids[i + 1], ids[i + 2], mi);
+      }
+    }
+  }
+  if (!geo.pos) throw new Error('Geometria sem vértices.');
+  return geo;
+}
+
+/* ---------- .TXD → texturas (DXT1/3/5, 8888, 888, 1555, 565, 4444, LUM8, paleta) ---------- */
+function parseTXD(buffer) {
+  const R = new RWReader(buffer), out = {};
+  let o = 0, dict = null;
+  while (o + 12 <= buffer.byteLength) { const h = R.header(o); if (h.type === RW.TEXDICT) { dict = h; break; } if (h.size <= 0) break; o = h.end; }
+  if (!dict) throw new Error('Não encontrei um Texture Dictionary (0x16) no .TXD.');
+  R.children(dict).filter(k => k.type === RW.TEXNATIVE).forEach(tn => {
+    try {
+      const st = R.find(tn, RW.STRUCT); let p = st.data;
+      const platform = R.u32(p); p += 8; // platform + filter flags
+      if (platform !== 8 && platform !== 9) return; // só D3D8/D3D9 (PC)
+      const name = R.str(p, 32).toLowerCase(); p += 64;
+      const rf = R.u32(p), d3d = R.u32(p + 4); p += 8;
+      const w = R.u16(p), h = R.u16(p + 2), depth = R.u8[p + 4]; p += 7; const comp = R.u8[p]; p += 1;
+      let palette = null;
+      if (rf & 0x2000) { palette = R.u8.slice(p, p + 1024); p += 1024; } else if (rf & 0x4000) { palette = R.u8.slice(p, p + 128); p += 128; }
+      const size = R.u32(p); p += 4;
+      const src = R.u8.subarray(p, p + size);
+      let dxt = 0;
+      if (platform === 9) { if (d3d === 0x31545844) dxt = 1; else if (d3d === 0x33545844) dxt = 3; else if (d3d === 0x35545844) dxt = 5; else if (d3d === 0x32545844) dxt = 3; else if (d3d === 0x34545844) dxt = 5; }
+      else if (comp) dxt = comp === 1 ? 1 : comp >= 4 ? 5 : 3;
+      const rgba = new Uint8Array(w * h * 4);
+      if (dxt) decodeDXT(src, w, h, dxt, rgba);
+      else if (palette) { for (let i = 0; i < w * h; i++) { const ix = (rf & 0x4000) ? ((src[i >> 1] >> ((i & 1) * 4)) & 15) : src[i]; rgba.set(palette.subarray(ix * 4, ix * 4 + 4), i * 4); } }
+      else decodeRaw(src, w, h, rf & 0xF00, depth, rgba);
+      let alpha = false; for (let i = 3; i < rgba.length; i += 4) if (rgba[i] < 250) { alpha = true; break; }
+      const t = new THREE.DataTexture(rgba, w, h, THREE.RGBAFormat);
+      t.encoding = THREE.sRGBEncoding; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = MAX_ANISO;
+      t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.needsUpdate = true;
+      t.userData = { alpha, name, w, h, fmt: dxt ? 'DXT' + dxt : palette ? 'PAL' : 'RAW' };
+      out[name] = t;
+    } catch (e) { console.warn('TXD: textura ignorada', e); }
+  });
+  return out;
+}
+function c565(c, o, arr) { arr[o] = ((c >> 11) & 31) * 255 / 31 | 0; arr[o + 1] = ((c >> 5) & 63) * 255 / 63 | 0; arr[o + 2] = (c & 31) * 255 / 31 | 0; }
+function decodeDXT(src, w, h, type, out) {
+  const bw = Math.max(1, (w + 3) >> 2), bh = Math.max(1, (h + 3) >> 2), bs = type === 1 ? 8 : 16, col = new Uint8Array(16), al = new Uint8Array(16);
+  const dv = new DataView(src.buffer, src.byteOffset, src.byteLength);
+  for (let by = 0; by < bh; by++) for (let bx = 0; bx < bw; bx++) {
+    const b = (by * bw + bx) * bs; if (b + bs > src.length) return;
+    let cb = b; al.fill(255);
+    if (type === 3) { for (let i = 0; i < 16; i++) { const v = (src[b + (i >> 1)] >> ((i & 1) * 4)) & 15; al[i] = v * 17; } cb = b + 8; }
+    else if (type === 5) {
+      const a0 = src[b], a1 = src[b + 1], av = [a0, a1];
+      if (a0 > a1) for (let i = 1; i < 7; i++) av.push(((7 - i) * a0 + i * a1) / 7 | 0); else { for (let i = 1; i < 5; i++) av.push(((5 - i) * a0 + i * a1) / 5 | 0); av.push(0, 255); }
+      let bits = 0, nb = 0, q = b + 2;
+      for (let i = 0; i < 16; i++) { if (nb < 3) { bits |= src[q++] << nb; nb += 8; } al[i] = av[bits & 7]; bits >>= 3; nb -= 3; }
+      cb = b + 8;
+    }
+    const c0 = dv.getUint16(cb, true), c1 = dv.getUint16(cb + 2, true), idx = dv.getUint32(cb + 4, true);
+    c565(c0, 0, col); col[3] = 255; c565(c1, 4, col); col[7] = 255;
+    if (c0 > c1 || type !== 1) { for (let k = 0; k < 3; k++) { col[8 + k] = (2 * col[k] + col[4 + k]) / 3 | 0; col[12 + k] = (col[k] + 2 * col[4 + k]) / 3 | 0; } col[11] = col[15] = 255; }
+    else { for (let k = 0; k < 3; k++) { col[8 + k] = (col[k] + col[4 + k]) >> 1; col[12 + k] = 0; } col[11] = 255; col[15] = 0; }
+    for (let py = 0; py < 4; py++) for (let px = 0; px < 4; px++) {
+      const x = bx * 4 + px, y = by * 4 + py; if (x >= w || y >= h) continue;
+      const i = py * 4 + px, ci = ((idx >>> (2 * i)) & 3) * 4, o = (y * w + x) * 4;
+      out[o] = col[ci]; out[o + 1] = col[ci + 1]; out[o + 2] = col[ci + 2]; out[o + 3] = type === 1 ? col[ci + 3] : al[i];
+    }
+  }
+}
+function decodeRaw(src, w, h, fmt, depth, out) {
+  const n = w * h, dv = new DataView(src.buffer, src.byteOffset, src.byteLength);
+  for (let i = 0; i < n; i++) {
+    const o = i * 4;
+    if (fmt === 0x500 || fmt === 0x600 || (depth === 32 && fmt !== 0x100)) { if (i * 4 + 3 >= src.length) break; out[o] = src[i * 4 + 2]; out[o + 1] = src[i * 4 + 1]; out[o + 2] = src[i * 4]; out[o + 3] = fmt === 0x600 ? 255 : src[i * 4 + 3]; }
+    else if (fmt === 0x400) { out[o] = out[o + 1] = out[o + 2] = src[i]; out[o + 3] = 255; }
+    else { if (i * 2 + 1 >= src.length) break; const c = dv.getUint16(i * 2, true);
+      if (fmt === 0x200) { c565(c, o, out); out[o + 3] = 255; }
+      else if (fmt === 0x300) { out[o] = ((c >> 8) & 15) * 17; out[o + 1] = ((c >> 4) & 15) * 17; out[o + 2] = (c & 15) * 17; out[o + 3] = ((c >> 12) & 15) * 17; }
+      else { out[o] = ((c >> 10) & 31) * 255 / 31 | 0; out[o + 1] = ((c >> 5) & 31) * 255 / 31 | 0; out[o + 2] = (c & 31) * 255 / 31 | 0; out[o + 3] = fmt === 0xA00 ? 255 : (c & 0x8000 ? 255 : 0); }
+    }
+  }
+}
+
+/* ---------- Estrutura DFF → THREE.Group (Z-up mantido; a rotação fica no ajuste) ---------- */
+const GTA_PRIMARY = [60, 255, 0], GTA_SECONDARY = [255, 0, 175];
+const near = (c, r, t = 12) => Math.abs(c[0] - r[0]) < t && Math.abs(c[1] - r[1]) < t && Math.abs(c[2] - r[2]) < t;
+function buildDFFObject(dff, textures) {
+  const root = new THREE.Group(); root.name = 'dff_root';
+  const groups = dff.frames.map((f, i) => {
+    const g = new THREE.Group(); g.name = f.name || ('frame_' + i);
+    const r = f.rot, m = new THREE.Matrix4();
+    m.set(r[0], r[3], r[6], f.pos[0], r[1], r[4], r[7], f.pos[1], r[2], r[5], r[8], f.pos[2], 0, 0, 0, 1);
+    m.decompose(g.position, g.quaternion, g.scale); return g;
+  });
+  dff.frames.forEach((f, i) => { const par = f.parent >= 0 && f.parent < groups.length && f.parent !== i ? groups[f.parent] : root; par.add(groups[i]); });
+  const missing = new Set();
+  const matCache = new Map();
+  const makeMat = (m) => {
+    const key = m.color.join(',') + '|' + m.texture;
+    if (matCache.has(key)) return matCache.get(key);
+    const tex = m.texture ? textures[m.texture.toLowerCase()] : null;
+    if (m.texture && !tex) missing.add(m.texture);
+    let col = m.color.slice(0, 3), role = null, emissive = 0;
+    if (near(col, GTA_PRIMARY)) role = 'primary'; else if (near(col, GTA_SECONDARY)) role = 'secondary';
+    else if (near(col, [255, 175, 0]) || near(col, [0, 255, 200])) { col = [255, 250, 235]; emissive = 0.35; }
+    else if (near(col, [185, 255, 0]) || near(col, [255, 60, 0])) { col = [170, 10, 10]; emissive = 0.4; }
+    const a = m.color[3] / 255, transparent = a < 0.98 || !!(tex && tex.userData.alpha);
+    const mat = role ? new THREE.MeshPhysicalMaterial({ color: new THREE.Color().setRGB(col[0] / 255, col[1] / 255, col[2] / 255).convertSRGBToLinear(), map: tex || null, metalness: 0.45, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.05 })
+      : new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(col[0] / 255, col[1] / 255, col[2] / 255).convertSRGBToLinear(), map: tex || null, roughness: transparent ? 0.08 : 0.55, metalness: transparent ? 0 : 0.15 });
+    if (emissive) { mat.emissive = mat.color.clone(); mat.emissiveIntensity = emissive; }
+    if (transparent) { mat.transparent = true; mat.opacity = Math.max(0.25, a); mat.depthWrite = false; mat.side = THREE.DoubleSide; mat.alphaTest = 0.02; }
+    mat.name = m.texture || ('cor_' + m.color.slice(0, 3).join('_'));
+    mat.userData = { gtaRole: role, texName: m.texture };
+    matCache.set(key, mat); return mat;
+  };
+  dff.atomics.forEach((at) => {
+    const G = dff.geometries[at.geometry]; if (!G) return;
+    const bg = new THREE.BufferGeometry();
+    bg.setAttribute('position', new THREE.BufferAttribute(G.pos, 3));
+    if (G.nrm) bg.setAttribute('normal', new THREE.BufferAttribute(G.nrm, 3));
+    if (G.uv) bg.setAttribute('uv', new THREE.BufferAttribute(G.uv, 2));
+    // índices agrupados por material
+    const byMat = {}; for (let i = 0; i < G.tris.length; i += 4) { const mi = G.tris[i + 3]; (byMat[mi] = byMat[mi] || []).push(G.tris[i], G.tris[i + 1], G.tris[i + 2]); }
+    const index = [], mats = []; let start = 0;
+    Object.keys(byMat).forEach((mi, gi) => { const arr = byMat[mi]; index.push(...arr); bg.addGroup(start, arr.length, gi); start += arr.length; mats.push(makeMat(G.materials[mi] || G.materials[0])); });
+    if (!index.length) return;
+    bg.setIndex(index.length > 65535 || G.numVerts > 65535 ? new THREE.Uint32BufferAttribute(index, 1) : new THREE.Uint16BufferAttribute(index, 1));
+    if (!G.nrm) bg.computeVertexNormals();
+    bg.computeBoundingBox(); bg.computeBoundingSphere();
+    const msh = new THREE.Mesh(bg, mats.length === 1 ? mats[0] : mats);
+    const fr = groups[at.frame]; msh.name = fr ? fr.name : 'atomic';
+    msh.castShadow = msh.receiveShadow = true;
+    (fr || root).add(msh);
+  });
+  root.userData.missingTextures = [...missing];
+  return root;
+}
+
+/* ---------- Utilidades de arquivos ---------- */
+const extOf = n => (n.split('.').pop() || '').toLowerCase();
+const baseOf = n => n.split(/[\\/]/).pop();
+const IMG_MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', bmp: 'image/bmp', gif: 'image/gif' };
+/* Normaliza qualquer entrada (File/Blob, {name,data}, typed array) → {name, type, data: ArrayBuffer} */
+function readBlobAsArrayBuffer(b) {
+  if (typeof b.arrayBuffer === 'function') return b.arrayBuffer();
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => rej(fr.error || new Error('Falha ao ler arquivo')); fr.readAsArrayBuffer(b); });
+}
+async function toArrayBuffer(d) {
+  if (d == null) return null;
+  if (d instanceof ArrayBuffer) return d;
+  if (ArrayBuffer.isView(d)) return d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength);
+  if (typeof Blob !== 'undefined' && d instanceof Blob) return readBlobAsArrayBuffer(d);
+  if (d && typeof d.byteLength === 'number' && typeof d.slice === 'function') return d.slice(0); // ArrayBuffer de outro realm
+  if (typeof d === 'string') return new TextEncoder().encode(d).buffer;
+  return null;
+}
+async function normalizeFile(f, i) {
+  if (!f) throw new Error('Arquivo vazio ou inválido.');
+  const name = String(f.name || `arquivo_${i}`), type = f.type || '';
+  let data = null;
+  try { data = (typeof Blob !== 'undefined' && f instanceof Blob) ? await readBlobAsArrayBuffer(f) : await toArrayBuffer(f.data); }
+  catch (e) { throw new Error(`Não foi possível ler "${baseOf(name)}": ${e && e.message || e}`); }
+  if (!data) throw new Error(`Não foi possível ler "${baseOf(name)}" (dados ausentes).`);
+  return { name, type, data };
+}
+async function normalizeFiles(files) {
+  const list = Array.from(files || []), out = [];
+  for (let i = 0; i < list.length; i++) out.push(await normalizeFile(list[i], i));
+  return out;
+}
+function assertData(f, label) {
+  if (!f || !(f.data instanceof ArrayBuffer || (f.data && typeof f.data.byteLength === 'number')) || f.data.byteLength === 0)
+    throw new Error(`${label || 'Arquivo'} "${baseOf((f && f.name) || '?')}" está vazio ou não pôde ser lido.`);
+}
+async function expandZips(files) {
+  const out = [];
+  for (const f of await normalizeFiles(files)) {
+    if (extOf(f.name) !== 'zip') { out.push(f); continue; }
+    if (!window.JSZip) throw new Error('JSZip não carregou (verifique a internet).');
+    assertData(f, 'ZIP');
+    let zip; try { zip = await JSZip.loadAsync(f.data); } catch (e) { throw new Error(`ZIP "${baseOf(f.name)}" inválido ou corrompido: ${e && e.message || e}`); }
+    const entries = Object.values(zip.files).filter(e => !e.dir && !/__MACOSX|\.DS_Store/i.test(e.name));
+    for (const e of entries) out.push({ name: e.name, type: '', data: await e.async('arraybuffer') });
+  }
+  return out;
+}
+function makeResolver(files) {
+  const urls = {}, created = [];
+  files.forEach(f => {
+    const mime = IMG_MIME[extOf(f.name)] || 'application/octet-stream';
+    const u = URL.createObjectURL(new Blob([f.data], { type: mime })); created.push(u);
+    const full = f.name.replace(/\\/g, '/').toLowerCase();
+    urls[full] = u; urls[baseOf(full)] = u;
+  });
+  const resolve = (url) => {
+    if (/^(blob:|data:)/.test(url)) return url;
+    let k = decodeURIComponent(url.split('?')[0]).replace(/\\/g, '/').toLowerCase().replace(/^\.?\//, '');
+    return urls[k] || urls[baseOf(k)] || url;
+  };
+  return { resolve, dispose: () => created.forEach(u => URL.revokeObjectURL(u)) };
+}
+function texFromImageFile(f) {
+  return new Promise((res) => {
+    const img = new Image(), u = URL.createObjectURL(new Blob([f.data], { type: IMG_MIME[extOf(f.name)] || 'image/png' }));
+    img.onload = () => { const t = new THREE.Texture(img); t.flipY = false; t.encoding = THREE.sRGBEncoding; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = MAX_ANISO; t.needsUpdate = true; t.userData = { alpha: /png|webp/.test(extOf(f.name)) }; URL.revokeObjectURL(u); res(t); };
+    img.onerror = () => { URL.revokeObjectURL(u); res(null); };
+    img.src = u;
+  });
+}
+
+/* ---------- Carregadores por formato → { object, format, notes[] } ---------- */
+async function loadDFFFiles(files) {
+  const dffs = files.filter(f => extOf(f.name) === 'dff' && f.data && f.data.byteLength > 0).sort((a, b) => b.data.byteLength - a.data.byteLength);
+  if (!dffs.length) throw new Error('O arquivo .DFF está vazio ou não pôde ser lido.');
+  const notes = [], textures = {};
+  for (const t of files.filter(f => extOf(f.name) === 'txd')) {
+    try { assertData(t, 'TXD'); const tx = parseTXD(t.data); Object.assign(textures, tx); notes.push(`TXD ${baseOf(t.name)}: ${Object.keys(tx).length} textura(s)`); }
+    catch (e) { notes.push(`TXD ${baseOf(t.name)}: ${e.message}`); }
+  }
+  for (const im of files.filter(f => IMG_MIME[extOf(f.name)])) { const t = await texFromImageFile(im); if (t) textures[baseOf(im.name).replace(/\.[^.]+$/, '').toLowerCase()] = t; }
+  let dff; try { dff = parseDFFBinary(dffs[0].data); } catch (e) { throw new Error(`DFF "${baseOf(dffs[0].name)}" inválido ou corrompido: ${e && e.message || e}`); }
+  notes.push(`DFF ${baseOf(dffs[0].name)}: RW 0x${dff.version.toString(16)}, ${dff.frames.length} frames, ${dff.geometries.length} geometrias, ${dff.atomics.length} atomics`);
+  const obj = buildDFFObject(dff, textures);
+  if (obj.userData.missingTextures.length) notes.push(`Texturas não encontradas (${obj.userData.missingTextures.length}): ${obj.userData.missingTextures.slice(0, 8).join(', ')}${obj.userData.missingTextures.length > 8 ? '…' : ''}` + (files.some(f => extOf(f.name) === 'txd') ? '' : ' — inclua o .TXD do carro.'));
+  return { object: obj, format: 'DFF', zUp: true, notes };
+}
+function loadGLTFFiles(files) {
+  return new Promise((resolve, reject) => {
+    const main = files.find(f => extOf(f.name) === 'glb') || files.find(f => extOf(f.name) === 'gltf');
+    try { assertData(main, 'Modelo'); } catch (e) { reject(e); return; }
+    // Detecta pelo conteúdo (magic "glTF"), não só pela extensão
+    const u8 = new Uint8Array(main.data);
+    const isGLB = u8.length >= 12 && u8[0] === 0x67 && u8[1] === 0x6C && u8[2] === 0x54 && u8[3] === 0x46;
+    let data, format;
+    if (isGLB) { data = main.data; format = 'GLB'; }
+    else {
+      let text = new TextDecoder('utf-8').decode(main.data).replace(/^\uFEFF/, '').trim();
+      if (!text) { reject(new Error(`"${baseOf(main.name)}" está vazio.`)); return; }
+      if (text[0] !== '{') { reject(new Error(`"${baseOf(main.name)}" não é um GLB nem um .GLTF (JSON) válido.`)); return; }
+      try { JSON.parse(text); } catch (e) { reject(new Error(`.GLTF "${baseOf(main.name)}" com JSON inválido/truncado: ${e.message}`)); return; }
+      data = text; format = 'GLTF';
+    }
+    // .bin / texturas externas são resolvidas a partir dos arquivos irmãos (blob URLs)
+    const res = makeResolver(files);
+    const manager = new THREE.LoadingManager(); manager.setURLModifier(res.resolve);
+    const loader = new THREE.GLTFLoader(manager);
+    const fail = (err) => { res.dispose(); reject(new Error(`${format} "${baseOf(main.name)}" inválido: ` + (err && err.message || err) + (format === 'GLTF' ? ' (inclua o .bin e as texturas junto, ou use .GLB/.ZIP)' : ''))); };
+    try {
+      loader.parse(data, '', (gltf) => {
+        if (!gltf || !gltf.scene) { fail(new Error('cena vazia')); return; }
+        setTimeout(res.dispose, 15000);
+        resolve({ object: gltf.scene, format, zUp: false, notes: [`${baseOf(main.name)}: ${gltf.scene.children.length} nó(s) raiz`] });
+      }, fail);
+    } catch (e) { fail(e); }
+  });
+}
+async function loadOBJFiles(files) {
+  const objF = files.find(f => extOf(f.name) === 'obj'), mtlF = files.find(f => extOf(f.name) === 'mtl');
+  assertData(objF, 'OBJ');
+  const objText = new TextDecoder().decode(objF.data);
+  if (!/^\s*(v|f)\s/m.test(objText)) throw new Error(`OBJ "${baseOf(objF.name)}" não contém vértices/faces (arquivo inválido?).`);
+  const res = makeResolver(files), manager = new THREE.LoadingManager(); manager.setURLModifier(res.resolve);
+  const loader = new THREE.OBJLoader(manager), notes = [];
+  if (mtlF && mtlF.data && mtlF.data.byteLength) {
+    try {
+      const mtl = new THREE.MTLLoader(manager).parse(new TextDecoder().decode(mtlF.data), '');
+      mtl.preload(); loader.setMaterials(mtl); notes.push(`MTL ${baseOf(mtlF.name)}: ${Object.keys(mtl.materialsInfo).length} material(is)`);
+    } catch (e) { notes.push(`MTL ${baseOf(mtlF.name)} ignorado: ${e && e.message || e}`); }
+  } else notes.push(mtlF ? `MTL ${baseOf(mtlF.name)} vazio: materiais neutros serão usados.` : 'Sem .MTL: materiais neutros serão usados.');
+  let obj; try { obj = loader.parse(objText); } catch (e) { res.dispose(); throw new Error(`OBJ "${baseOf(objF.name)}" inválido: ${e && e.message || e}`); }
+  obj.traverse(o => { if (o.isMesh) { const ms = Array.isArray(o.material) ? o.material : [o.material]; o.material = ms.map(m => { const n = new THREE.MeshStandardMaterial({ color: m.color || 0xcccccc, map: m.map || null, transparent: m.transparent, opacity: m.opacity ?? 1, roughness: 0.5, metalness: 0.15, name: m.name }); return n; }); if (o.material.length === 1) o.material = o.material[0]; } });
+  setTimeout(res.dispose, 15000);
+  notes.push(`OBJ ${baseOf(objF.name)}: ${obj.children.length} objeto(s)`);
+  return { object: obj, format: 'OBJ', zUp: false, notes };
+}
+
+/* =====================================================================
+   8. Modelo importado: mapeamento GTA, normalização 3,81 m, capô, pintura
+   ===================================================================== */
+const IMP = { container: new THREE.Group(), orient: null, object: null, meta: null, adj: null, hood: null, meshes: [], paintMats: [] };
+CAR.root.add(IMP.container);
+const RX = {
+  hide: /(_dam|_vlo|_lo|_lod)(\d*)($|_|\.)/i,
+  bonnet: /bonnet|capo|capô|hood/i,
+  bumpers: /bump|bumper|parachoque|para-choque|para_choque/i,
+  wheels: /wheel|roda|rim\b|tire|tyre|pneu/i,
+  chassis: /chassis|body|carroceria|carcaca|carcaça/i,
+  noPaint: /glass|vidro|window|janela|windscreen|tire|tyre|pneu|rubber|borracha|chrome|cromo|light|lamp|farol|lanterna|interior|seat|banco|grill|grade|mirror|espelho|plate|placa|black|preto|engine|motor|brake|freio|disc|caliper/i,
+  paintName: /paint|carpaint|car_paint|primary|exterior|lack|pintura|body_?col|colou?r/i
+};
+const ROLE_LABEL = { chassis: 'Carroceria', bonnet: 'Capô', bumpers: 'Para-choques', wheels: 'Rodas' };
+function nameChain(o) { const n = []; let p = o; for (let i = 0; p && i < 4 && p !== IMP.orient; i++, p = p.parent) if (p.name) n.push(p.name); return n; }
+function roleOf(o) {
+  const chain = nameChain(o);
+  for (const n of chain) { if (RX.bonnet.test(n)) return 'bonnet'; if (RX.bumpers.test(n)) return 'bumpers'; if (/wheel_(rf|lf|rb|lb|rm|lm)|^wheel/i.test(n) || RX.wheels.test(n)) return 'wheels'; if (RX.chassis.test(n)) return 'chassis'; }
+  return null;
+}
+function gtaCloneWheels(root) {
+  const dummies = []; root.traverse(o => { if (/^wheel_(rf|lf|rb|lb|rm|lm)_dummy$/i.test(o.name)) dummies.push(o); });
+  if (!dummies.length) return 0;
+  const hasMesh = d => { let m = false; d.traverse(o => { if (o.isMesh && !RX.hide.test(o.name)) m = true; }); return m; };
+  const src = dummies.find(hasMesh); if (!src) return 0;
+  const srcMeshes = []; src.traverse(o => { if (o.isMesh && !RX.hide.test(o.name)) srcMeshes.push(o); });
+  let n = 0;
+  dummies.forEach(d => {
+    if (d === src || hasMesh(d)) return;
+    const holder = new THREE.Group(); holder.name = 'wheel_clone_' + d.name;
+    srcMeshes.forEach(m => { const c = m.clone(); c.name = 'wheel'; // transform relativo ao dummy de origem
+      const rel = new THREE.Matrix4(); src.updateMatrixWorld(true); rel.copy(src.matrixWorld).invert().multiply(m.matrixWorld); rel.decompose(c.position, c.quaternion, c.scale); holder.add(c); });
+    if (/_l[fbm]_/i.test(d.name) !== /_l[fbm]_/i.test(src.name)) holder.rotation.z = Math.PI; // lado oposto: espelha girando 180° no eixo vertical (Z do GTA)
+    d.add(holder); n++;
+  });
+  return n;
+}
+function disposeObject(o) {
+  o.traverse(c => { if (c.isMesh) { c.geometry && c.geometry.dispose(); (Array.isArray(c.material) ? c.material : [c.material]).forEach(m => { if (!m) return; ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'alphaMap', 'aoMap'].forEach(k => m[k] && m[k].dispose && m[k].dispose()); m.dispose(); }); } });
+}
+function clearImported() {
+  if (IMP.orient) { IMP.container.remove(IMP.orient); disposeObject(IMP.orient); }
+  IMP.orient = IMP.object = IMP.meta = IMP.hood = null; IMP.meshes = []; IMP.paintMats = [];
+  CAR.imported = null;
+}
+function setProceduralActive() {
+  clearImported(); CAR.proc.visible = true; CONFIG.model = { type: 'procedural' };
+  updateModelBadge(); refreshAdjustUI(); HOOKS.modelChanged && HOOKS.modelChanged();
+}
+function updateModelBadge() {
+  const b = $('#modelBadge'); if (!b) return;
+  b.innerHTML = IMP.meta ? `<i class="fa-solid fa-cube mr-1 text-emerald-400"></i>${escapeHTML(IMP.meta.name)} <span class="text-slate-500">· ${IMP.meta.format}</span>` : '<i class="fa-solid fa-car-side mr-1 text-sky-400"></i>Gol procedural';
+}
+function escapeHTML(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+/** Entrada principal: files = [{name, data:ArrayBuffer}], meta = {name, id?, source?} */
+async function loadModelFromFiles(rawFiles, meta = {}, adj = null) {
+  const files = await expandZips(rawFiles);
+  const has = e => files.some(f => extOf(f.name) === e);
+  let r;
+  if (has('dff')) r = await loadDFFFiles(files);
+  else if (has('glb') || has('gltf')) r = await loadGLTFFiles(files);
+  else if (has('obj')) r = await loadOBJFiles(files);
+  else if (has('txd')) throw new Error('Só chegou o .TXD (texturas). Selecione também o .DFF do carro.');
+  else throw new Error('Nenhum modelo reconhecido. Formatos aceitos: .DFF(+.TXD), .GLB, .GLTF, .OBJ(+.MTL) ou .ZIP.');
+  clearImported();
+  const orient = new THREE.Group(); orient.name = 'imported_orient';
+  orient.add(r.object); IMP.orient = orient; IMP.object = r.object; IMP.container.add(orient);
+  const cloned = r.format === 'DFF' ? gtaCloneWheels(r.object) : 0;
+  if (cloned) r.notes.push(`Roda do GTA clonada em ${cloned} posição(ões) wheel_*_dummy`);
+  // Visibilidade + papéis
+  IMP.meshes = []; let hidden = 0;
+  r.object.updateMatrixWorld(true);
+  r.object.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = o.receiveShadow = true;
+    const chain = nameChain(o).join(' ');
+    const hide = RX.hide.test(o.name) || (o.parent && RX.hide.test(o.parent.name) && !/dummy/i.test(o.parent.name));
+    if (hide) { o.visible = false; hidden++; }
+    o.userData.role = roleOf(o);
+    IMP.meshes.push(o);
+  });
+  if (hidden) r.notes.push(`${hidden} malha(s) de dano/LOD ocultas (_dam, _vlo, _lo)`);
+  IMP.meta = { name: meta.name || baseOf((rawFiles[0] || {}).name || 'modelo'), format: r.format, id: meta.id || null, source: meta.source || null, zUpDefault: r.zUp };
+  IMP.adj = Object.assign({ rot: 0, flip: false, zUp: r.zUp, scale: 100, real: true, y: 0, auto: true, paintAll: false, hidden: [] }, adj || {});
+  (IMP.adj.hidden || []).forEach(i => { if (IMP.meshes[i]) IMP.meshes[i].visible = false; });
+  setupPaint();
+  applyImportTransform();
+  if (IMP.adj.auto && !adj) autoOrient();
+  CAR.imported = IMP.orient; CAR.proc.visible = false;
+  CONFIG.model = { type: meta.id ? 'library' : 'session', id: meta.id || null, name: IMP.meta.name, format: r.format, adj: IMP.adj };
+  updateModelBadge(); refreshAdjustUI(); applyImportedPaint();
+  HOOKS.modelChanged && HOOKS.modelChanged();
+  return r;
+}
+function visibleBox(obj, roleFilter) {
+  const box = new THREE.Box3(), tmp = new THREE.Box3(); let any = false;
+  obj.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(CAR.root.matrixWorld).invert(), m = new THREE.Matrix4();
+  obj.traverse(o => {
+    if (!o.isMesh || !o.geometry) return;
+    let vis = true, p = o; while (p && p !== obj) { if (!p.visible) { vis = false; break; } p = p.parent; } if (!vis) return;
+    if (roleFilter && o.userData.role !== roleFilter) return;
+    if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+    tmp.copy(o.geometry.boundingBox).applyMatrix4(m.copy(inv).multiply(o.matrixWorld)); box.union(tmp); any = true;
+  });
+  return any ? box : null;
+}
+function applyImportTransform() {
+  if (!IMP.orient) return;
+  const A = IMP.adj, O = IMP.orient, obj = IMP.object;
+  // restaura capô antes de medir
+  if (IMP.hood) IMP.hood.meshes.forEach(h => { h.mesh.matrix.copy(h.base); h.mesh.matrixAutoUpdate = true; h.mesh.matrix.decompose(h.mesh.position, h.mesh.quaternion, h.mesh.scale); });
+  IMP.hood = null;
+  O.position.set(0, 0, 0); O.scale.set(1, 1, 1);
+  O.rotation.set(0, 0, 0); obj.rotation.set(A.zUp ? -Math.PI / 2 : 0, 0, 0); obj.position.set(0, 0, 0);
+  O.rotation.y = A.rot * Math.PI / 2 + (A.flip ? Math.PI : 0);
+  CAR.root.updateMatrixWorld(true);
+  const b = visibleBox(O); if (!b) return;
+  const size = b.getSize(new THREE.Vector3());
+  const len = Math.max(size.x, size.z) || 1;
+  const s = (A.real ? 3.81 / len : 1) * (A.scale / 100);
+  O.scale.setScalar(s);
+  CAR.root.updateMatrixWorld(true);
+  const b2 = visibleBox(O), c = b2.getCenter(new THREE.Vector3());
+  O.position.set(-c.x, -b2.min.y + A.y / 100, -c.z);
+  CAR.root.updateMatrixWorld(true);
+  setupImportedHood();
+}
+/* frente = +Z: roda 90° se o comprimento estiver em X; vira se o capô estiver atrás */
+function autoOrient() {
+  const A = IMP.adj; let b = visibleBox(IMP.orient); if (!b) return;
+  const sz = b.getSize(new THREE.Vector3());
+  if (sz.x > sz.z * 1.15) { A.rot = (A.rot + 1) % 4; applyImportTransform(); b = visibleBox(IMP.orient); }
+  const hb = visibleBox(IMP.orient, 'bonnet');
+  let front = 0;
+  if (hb) front = hb.getCenter(new THREE.Vector3()).z;
+  else if (IMP.meta.format === 'DFF') front = -1; // GTA: frente em +Y → vira -Z após Z-up
+  if (front < 0) { A.flip = !A.flip; applyImportTransform(); }
+}
+function setupImportedHood() {
+  const hm = IMP.meshes.filter(m => m.userData.role === 'bonnet' && m.visible);
+  if (!hm.length) { IMP.hood = null; return; }
+  const hb = visibleBox(IMP.orient, 'bonnet'); if (!hb) return;
+  const hinge = new THREE.Vector3(0, hb.max.y, hb.min.z);
+  const inv = new THREE.Matrix4().copy(CAR.root.matrixWorld).invert();
+  IMP.hood = { hinge, meshes: hm.map(mesh => { mesh.updateMatrix(); const P = new THREE.Matrix4().copy(inv).multiply(mesh.parent.matrixWorld); return { mesh, base: mesh.matrix.clone(), P, Pinv: P.clone().invert() }; }) };
+}
+const _hm1 = new THREE.Matrix4(), _hm2 = new THREE.Matrix4(), _hm3 = new THREE.Matrix4();
+function updateImportedHood(angle) {
+  if (!IMP.hood) return;
+  const h = IMP.hood.hinge;
+  _hm1.makeTranslation(h.x, h.y, h.z).multiply(_hm2.makeRotationX(angle)).multiply(_hm3.makeTranslation(-h.x, -h.y, -h.z));
+  IMP.hood.meshes.forEach(e => { e.mesh.matrixAutoUpdate = false; e.mesh.matrix.copy(e.Pinv).multiply(_hm1).multiply(e.P).multiply(e.base); e.mesh.matrixWorldNeedsUpdate = true; });
+}
+/* Pintura: materiais clonados por malha e marcados com o papel (chassis/bonnet/bumpers/wheels) */
+function setupPaint() {
+  IMP.paintMats = [];
+  const usage = new Map();
+  IMP.meshes.forEach(m => {
+    const mats = Array.isArray(m.material) ? m.material : [m.material];
+    const newMats = mats.map(mat => {
+      if (!mat) return mat;
+      const c = mat.clone(); c.userData = Object.assign({}, mat.userData, { origColor: mat.color ? mat.color.clone() : null });
+      const idx = m.geometry && m.geometry.index ? m.geometry.index.count : 0; usage.set(c, (usage.get(c) || 0) + idx / mats.length);
+      return c;
+    });
+    m.material = Array.isArray(m.material) ? newMats : newMats[0];
+  });
+  refreshPaintRoles(usage);
+}
+function refreshPaintRoles(usage) {
+  IMP.paintMats = [];
+  const all = [];
+  IMP.meshes.forEach(m => (Array.isArray(m.material) ? m.material : [m.material]).forEach(mat => { if (mat) all.push([m, mat]); }));
+  all.forEach(([m, mat]) => {
+    const role = m.userData.role, gta = mat.userData.gtaRole, nm = (mat.name || '') + ' ' + (mat.userData.texName || '');
+    let pr = null;
+    if (gta === 'primary') pr = role && role !== 'wheels' ? role : role === 'wheels' ? 'wheels' : 'chassis';
+    else if (gta === 'secondary') pr = 'bumpers';
+    else if (mat.transparent || RX.noPaint.test(nm)) pr = null;
+    else if (RX.paintName.test(nm)) pr = role || 'chassis';
+    else if (IMP.adj && IMP.adj.paintAll && role) pr = role;
+    else if (role === 'bonnet' || role === 'bumpers') pr = role;
+    mat.userData.paintRole = pr;
+    if (pr) IMP.paintMats.push(mat);
+  });
+  // Nenhum material pintável? usa o material mais usado como carroceria
+  if (!IMP.paintMats.length && all.length) {
+    const score = new Map(); all.forEach(([m, mat]) => { if (mat.transparent || RX.noPaint.test(mat.name || '')) return; const n = m.geometry && m.geometry.index ? m.geometry.index.count : (m.geometry.attributes.position.count); score.set(mat, (score.get(mat) || 0) + n); });
+    let best = null, bs = 0; score.forEach((v, k) => { if (v > bs) { bs = v; best = k; } });
+    if (best) { best.userData.paintRole = 'chassis'; IMP.paintMats.push(best); }
+  }
+  all.forEach(([, mat]) => { if (!mat.userData.paintRole && mat.userData.origColor && mat.color) mat.color.copy(mat.userData.origColor); });
+}
+function applyImportedPaint() {
+  IMP.paintMats.forEach(mat => {
+    const r = mat.userData.paintRole; if (!r || !mat.color) return;
+    mat.color.set(CONFIG.colors[r]);
+    if (mat.map && mat.userData.gtaRole) { /* textura de sujeira do GTA: multiplica */ }
+  });
+}
+HOOKS.afterApply.push(applyImportedPaint);
+
+/* ---------- UI de ajuste ---------- */
+function refreshAdjustUI() {
+  const on = !!IMP.orient;
+  $('#adjEmpty').classList.toggle('hidden', on); $('#adjBody').classList.toggle('hidden', !on);
+  if (!on) return;
+  const A = IMP.adj;
+  $('#adjScale').value = A.scale; $('#adjScaleVal').textContent = A.scale + '%';
+  $('#adjY').value = A.y; $('#adjYVal').textContent = (A.y > 0 ? '+' : '') + A.y + ' cm';
+  $('#adjRealSize').checked = A.real; $('#adjPaintAll').checked = !!A.paintAll;
+  const counts = {}; IMP.meshes.forEach(m => { if (m.visible && m.userData.role) counts[m.userData.role] = (counts[m.userData.role] || 0) + 1; });
+  const b = visibleBox(IMP.orient), sz = b ? b.getSize(new THREE.Vector3()) : new THREE.Vector3();
+  $('#adjParts').innerHTML = Object.keys(ROLE_LABEL).map(k => `<div><i class="fa-solid ${counts[k] ? 'fa-circle-check text-emerald-400' : 'fa-circle-minus text-slate-500'} mr-1"></i>${ROLE_LABEL[k]}: <b>${counts[k] || 0}</b> malha(s)${k === 'bonnet' ? (IMP.hood ? ' · <span class="text-emerald-300">articulado</span>' : ' · <span class="text-slate-500">sem capô separado</span>') : ''}</div>`).join('')
+    + `<div class="mt-1 text-slate-400">Materiais pintáveis: <b>${IMP.paintMats.length}</b> · Tamanho: ${sz.z.toFixed(2)} × ${sz.x.toFixed(2)} × ${sz.y.toFixed(2)} m</div>`;
+  $('#adjMeshes').innerHTML = IMP.meshes.map((m, i) => `<button class="chip ${m.visible ? '' : 'off'}" data-mesh="${i}" title="${escapeHTML(nameChain(m).join(' ← '))}">${escapeHTML(m.name || 'malha ' + i)}${m.userData.role ? ' · ' + ROLE_LABEL[m.userData.role] : ''}</button>`).join('');
+}
+function adjChanged(retransform = true) {
+  if (!IMP.orient) return;
+  IMP.adj.hidden = IMP.meshes.map((m, i) => m.visible ? -1 : i).filter(i => i >= 0);
+  if (retransform) applyImportTransform();
+  CONFIG.model.adj = IMP.adj; refreshAdjustUI(); HOOKS.configChanged && HOOKS.configChanged();
+}
+$$('[data-adj]').forEach(b => b.addEventListener('click', () => {
+  if (!IMP.orient) return; const A = IMP.adj; A.auto = false;
+  if (b.dataset.adj === 'rot90') A.rot = (A.rot + 1) % 4; else if (b.dataset.adj === 'flip') A.flip = !A.flip; else A.zUp = !A.zUp;
+  adjChanged();
+}));
+$('#adjScale').addEventListener('input', e => { if (!IMP.orient) return; IMP.adj.scale = +e.target.value; adjChanged(); });
+$('#adjY').addEventListener('input', e => { if (!IMP.orient) return; IMP.adj.y = +e.target.value; adjChanged(); });
+$('#adjRealSize').addEventListener('change', e => { if (!IMP.orient) return; IMP.adj.real = e.target.checked; adjChanged(); });
+$('#adjPaintAll').addEventListener('change', e => { if (!IMP.orient) return; IMP.adj.paintAll = e.target.checked; refreshPaintRoles(); applyImportedPaint(); adjChanged(false); });
+$('#adjMeshes').addEventListener('click', e => {
+  const b = e.target.closest('[data-mesh]'); if (!b) return; const m = IMP.meshes[+b.dataset.mesh]; if (!m) return;
+  m.visible = !m.visible; adjChanged();
+});
+
+/* =====================================================================
+   UI: abas de peças, pintura, dinamômetro, alertas, orçamento
+   ===================================================================== */
+let curTab = 'engine';
+function computeStats() {
+  let hp = BASE_HP, tq = BASE_TQ, sub = 0;
+  installedItems().forEach(i => { hp += i.hp || 0; tq += i.tq || 0; sub += i.cost || 0; });
+  const syn = isOn('turbo_masterpower') && isOn('fueltech_ft450') && isOn('forged_internals');
+  if (syn) { hp += 45; tq += 4.5; }
+  const alerts = [];
+  if (isOn('turbo_masterpower') && !isOn('forged_internals')) alerts.push(['err', 'Turbo sem internos forjados: risco de quebra de canaleta e biela acima de 0,8 bar.']);
+  if (isOn('turbo_masterpower') && isOn('carb_brosol2e')) alerts.push(['warn', 'Turbo no Brosol 2E original: use carburador soprado ou FuelTech FT450.']);
+  if (CONFIG.sel.wheels === 'rim_orbital17' && ['susp_fixa', 'susp_rosca'].includes(CONFIG.sel.suspension)) alerts.push(['err', 'Orbital 17" com suspensão fixa/rosca: raspagem no para-lama dianteiro.']);
+  if (syn) alerts.push(['ok', 'Sinergia turbo + FT450 + forjados: +45 cv / +4,5 kgfm (1,5 bar no álcool).']);
+  const labor = sub * CONFIG.labor / 100;
+  return { hp, tq, sub, labor, total: sub + labor, alerts, syn };
+}
+function renderTab() {
+  const body = $('#tabBody');
+  if (curTab === 'paint') {
+    body.innerHTML = Object.entries(ROLE_LABEL).map(([k, l]) => `<div class="glass-soft p-3 mb-2"><div class="flex items-center justify-between mb-2"><span class="font-racing font-semibold">${l}</span><input type="color" data-color="${k}" value="${CONFIG.colors[k]}" style="width:42px;height:28px;padding:0"></div><div class="flex flex-wrap gap-1">${PALETTE.map(([c, n]) => `<button title="${n}" data-sw="${k}" data-c="${c}" style="width:22px;height:22px;border-radius:6px;background:${c};border:1px solid #fff3"></button>`).join('')}</div></div>`).join('');
+    return;
+  }
+  const cat = TUNING_DB[curTab]; if (!cat) return;
+  body.innerHTML = `<div class="lbl mb-2">${cat.title}</div>` + cat.items.map(i => `<button class="part glass-soft p-3 mb-2 w-full text-left ${isOn(i.id) ? 'ring-2 ring-sky-400' : ''}" data-part="${i.id}"><div class="flex justify-between gap-2"><span class="font-semibold">${i.name}</span><span class="text-sky-300 whitespace-nowrap">${i.cost ? BRL(i.cost) : 'Original'}</span></div><div class="text-[12px] text-slate-400 mt-1">${i.desc || ''}</div>${i.hp ? `<div class="text-[11.5px] text-emerald-300 mt-1">+${i.hp} cv${i.tq ? ' · +' + i.tq + ' kgfm' : ''}</div>` : ''}</button>`).join('');
+}
+$('#tabs').addEventListener('click', e => { const t = e.target.closest('[data-tab]'); if (!t) return; curTab = t.dataset.tab; $$('#tabs [data-tab]').forEach(x => x.classList.toggle('active', x === t)); renderTab(); });
+$('#tabBody').addEventListener('click', e => {
+  const p = e.target.closest('[data-part]'), sw = e.target.closest('[data-sw]');
+  if (p) { const it = ITEM[p.dataset.part]; if (it.slot) CONFIG.sel[it.slot] = it.id; else CONFIG.on[it.id] = !CONFIG.on[it.id]; configChanged(); }
+  if (sw) { CONFIG.colors[sw.dataset.sw] = sw.dataset.c; configChanged(); }
+});
+$('#tabBody').addEventListener('input', e => { const c = e.target.dataset.color; if (c) { CONFIG.colors[c] = e.target.value; applyConfig(); scheduleSave(); } });
+$('#laborRange').addEventListener('input', e => { CONFIG.labor = +e.target.value; refreshStats(); scheduleSave(); });
+function drawDyno(s) {
+  const cv = $('#dynoCanvas'), g = cv.getContext('2d'), W = cv.width = cv.clientWidth * 2 || 560, H = cv.height = cv.clientHeight * 2 || 240;
+  g.clearRect(0, 0, W, H); g.strokeStyle = 'rgba(148,163,184,.15)'; g.lineWidth = 1;
+  for (let i = 1; i < 6; i++) { g.beginPath(); g.moveTo(0, H * i / 6); g.lineTo(W, H * i / 6); g.stroke(); }
+  const peak = isOn('turbo_masterpower') ? 0.72 : 0.62, curve = (f, x) => { const t = (x - peak) / 0.45; return f(Math.max(0, 1 - t * t * (x < peak ? 0.8 : 1.6))); };
+  const plot = (col, val, max) => { g.strokeStyle = col; g.lineWidth = 4; g.beginPath(); for (let i = 0; i <= 60; i++) { const x = i / 60, y = curve(v => v, x) * val / max; i ? g.lineTo(x * W, H - y * H * 0.9) : g.moveTo(x * W, H - y * H * 0.9); } g.stroke(); };
+  plot('#38bdf8', s.hp, 300); plot('#f59e0b', s.tq * 10, 300);
+  $('#dynoInfo').textContent = `Pico ~${Math.round(5200 + (peak - 0.62) * 8000)} rpm · azul: potência · laranja: torque`;
+}
+function refreshStats() {
+  const s = computeStats();
+  $('#hpVal').textContent = Math.round(s.hp) + ' cv'; $('#tqVal').textContent = s.tq.toFixed(1) + ' kgfm';
+  $('#hpBar').style.width = clamp(s.hp / 300 * 100, 2, 100) + '%'; $('#tqBar').style.width = clamp(s.tq / 35 * 100, 2, 100) + '%';
+  $('#alerts').innerHTML = s.alerts.map(([t, m]) => `<div class="alert ${t}"><i class="fa-solid ${t === 'ok' ? 'fa-bolt' : 'fa-triangle-exclamation'} mt-[2px]"></i><div>${m}</div></div>`).join('') || '<div class="text-[12px] text-slate-500">Nenhum alerta mecânico.</div>';
+  $('#subVal').textContent = BRL(s.sub); $('#laborPct').textContent = CONFIG.labor + '%'; $('#laborVal').textContent = BRL(s.labor); $('#totVal').textContent = BRL(s.total);
+  $('#laborRange').value = CONFIG.labor; drawDyno(s);
+}
+function configChanged() { applyConfig(); renderTab(); refreshStats(); scheduleSave(); }
+HOOKS.configChanged = () => scheduleSave();
+
+/* Câmeras com desengate imediato ao toque */
+const CAMERAS = { general: [[3.2, 1.6, 3.8], [0, 0.45, 0]], engine: [[0.1, 1.4, 2.05], [0, 0.55, 1.25]], wheels: [[1.6, 0.45, 1.2], [0.8, 0.32, 1.1]], exhaust: [[1.2, 0.35, -2.5], [0.5, 0.25, -1.9]] };
+let camGoal = null;
+function setCam(k) {
+  const c = CAMERAS[k]; if (!c) return; camGoal = { p: new THREE.Vector3(...c[0]), t: new THREE.Vector3(...c[1]) };
+  $$('[data-cam]').forEach(b => b.classList.toggle('active', b.dataset.cam === k));
+  bayLight.intensity = k === 'engine' ? (bayLight.userData.on || 2.5) : 0;
+  if (k === 'engine' && !CAR.hood.target) toggleHood(true);
+}
+controls.addEventListener('start', () => { camGoal = null; });
+document.addEventListener('click', e => { const b = e.target.closest('[data-cam]'); if (b) setCam(b.dataset.cam); });
+
+/* Áudio procedural do AP */
+const AUD = { 
+    // Certifique-se de que o nome do arquivo aqui é o mesmo que você salvou na pasta
+    som: new Audio('motor-ap.mp3'), 
+    on: false, 
+    rpm: 0, 
+    target: 0, 
+    vol: +LS.get('golap.vol', 60) / 100,
+    loopTransitivo: null
+};
+
+// Faz o som da marcha lenta se repetir infinitamente sem pausar
+AUD.som.loop = true; 
+
+function ignition() {
+    if (AUD.on) {
+        // Desligar o motor
+        AUD.som.pause();
+        AUD.som.currentTime = 0; // Volta a fita para o início
+        AUD.on = false;
+        AUD.target = 0;
+        clearInterval(AUD.loopTransitivo);
+        $('#btnIgnition').innerHTML = '<i class="fa-solid fa-key"></i>Ligar motor';
+        return;
+    }
+    
+    // Ligar o motor
+    AUD.som.volume = AUD.vol;
+    AUD.som.playbackRate = 1.0; // Velocidade normal (1x)
+    AUD.som.play();
+    
+    AUD.on = true;
+    AUD.target = 900; // RPM da marcha lenta
+    $('#btnIgnition').innerHTML = '<i class="fa-solid fa-power-off"></i>Desligar';
+
+    // Este loop conecta a velocidade do áudio (pitch) ao ponteiro de RPM do seu painel
+    AUD.loopTransitivo = setInterval(() => {
+        if(AUD.on && AUD.rpm > 0) {
+            // A matemática aqui distorce a velocidade do som com base no giro atual.
+            // Quando bate 6800 RPM, a velocidade do áudio vai para quase 2.8x
+            AUD.som.playbackRate = 0.7 + (AUD.rpm / 3200); 
+        }
+    }, 50);
+}
+
+function rev() {
+    if (!AUD.on) ignition();
+    
+    // Define o alvo do RPM lá em cima
+    AUD.target = 6800; 
+    
+    // Depois de 800 milissegundos, solta o acelerador e volta para a lenta
+    setTimeout(() => {
+        if (AUD.on) {
+            AUD.target = 900;
+        }
+    }, 800);
+}
+
+/* Botões de ação */
+function toggleHood(force) {
+  CAR.hood.target = (force !== undefined ? force : !CAR.hood.target) ? -0.85 : 0;
+  $('#btnHood').innerHTML = CAR.hood.target ? '<i class="fa-solid fa-car-burst"></i>Fechar capô' : '<i class="fa-solid fa-car-burst"></i>Abrir capô';
+}
+let liftY = 0, liftTarget = 0;
+$('#btnHood').onclick = () => toggleHood();
+$('#btnLift').onclick = () => { liftTarget = liftTarget ? 0 : 1.1; $('#btnLift').innerHTML = liftTarget ? '<i class="fa-solid fa-arrow-down"></i>Baixar carro' : '<i class="fa-solid fa-arrow-up-from-bracket"></i>Elevar carro'; };
+$('#btnIgnition').onclick = ignition; $('#btnRev').onclick = rev;
+$('#btnAuto').onclick = () => { controls.autoRotate = !controls.autoRotate; camGoal = null; $('#btnAuto').classList.toggle('active', controls.autoRotate); };
+$('#btnShot').onclick = () => { draw(); canvas.toBlob(b => downloadBlob(b, 'gol-ap-studio.png')); };
+
+/* Modais */
+function openModal(id) { $(id).classList.add('show'); }
+$$('.modal-bg').forEach(m => { m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-close]')) m.classList.remove('show'); }); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.modal-bg.show').forEach(m => m.classList.remove('show')); });
+$$('[data-close-panel]').forEach(b => b.onclick = () => $('#' + b.dataset.closePanel).classList.remove('open'));
+$('#mobParts') && ($('#mobParts').onclick = () => $('#panelLeft').classList.toggle('open'));
+$('#mobDyno') && ($('#mobDyno').onclick = () => $('#panelRight').classList.toggle('open'));
+$('#btnModels').onclick = () => { openModal('#modalModels'); renderLibrary(); };
+$('#btnProjects').onclick = () => { openModal('#modalProjects'); renderProjects(); };
+$('#btnSettings').onclick = () => { $('#setToken').value = LS.get('golap.sftoken', ''); $('#setQuality').value = LS.get('golap.quality', 'auto'); $('#setVolume').value = AUD.vol * 100; openModal('#modalSettings'); };
+function mtab(k) { $$('#mTabs [data-mtab]').forEach(t => t.classList.toggle('active', t.dataset.mtab === k)); $$('[data-mpane]').forEach(p => p.classList.toggle('hidden', p.dataset.mpane !== k)); if (k === 'library') renderLibrary(); if (k === 'sketchfab') sfInit(); }
+$('#mTabs').addEventListener('click', e => { const t = e.target.closest('[data-mtab]'); if (t) mtab(t.dataset.mtab); });
+
+/* Checklist + exportação .TXT */
+function budgetText() {
+  const s = computeStats(), d = new Date();
+  const L = ['GOL QUADRADO 1.8 AP — ORÇAMENTO DE PREPARAÇÃO', 'Data: ' + d.toLocaleString('pt-BR'), 'Modelo: ' + (CONFIG.model.name || 'Gol procedural'), '-'.repeat(52)];
+  installedItems().forEach(i => L.push(`${i.name.padEnd(40).slice(0, 40)} ${(i.cost ? BRL(i.cost) : 'original').padStart(12)}`));
+  L.push('-'.repeat(52), `Subtotal de peças: ${BRL(s.sub)}`, `Mão de obra (${CONFIG.labor}%): ${BRL(s.labor)}`, `TOTAL: ${BRL(s.total)}`, '', `Potência aferida: ${Math.round(s.hp)} cv | Torque: ${s.tq.toFixed(1)} kgfm`);
+  if (s.alerts.length) { L.push('', 'ALERTAS:'); s.alerts.forEach(a => L.push(' - ' + a[1])); }
+  return L.join('\r\n');
+}
+$('#btnChecklist').onclick = () => {
+  const s = computeStats();
+  $('#checkBody').innerHTML = `<table class="w-full text-[13px]">${installedItems().map(i => `<tr class="border-b border-slate-700/40"><td class="py-2"><i class="fa-solid fa-square-check text-emerald-400 mr-2"></i>${i.name}</td><td class="text-right text-sky-300">${i.cost ? BRL(i.cost) : 'Original'}</td></tr>`).join('')}</table><div class="mt-4 text-[13.5px] leading-7">Subtotal: <b>${BRL(s.sub)}</b><br>Mão de obra (${CONFIG.labor}%): <b>${BRL(s.labor)}</b><br>Total: <b class="text-amber-300 text-lg">${BRL(s.total)}</b><br>Potência: <b>${Math.round(s.hp)} cv</b> · Torque: <b>${s.tq.toFixed(1)} kgfm</b></div><div class="mt-3 flex flex-col gap-2">${s.alerts.map(([t, m]) => `<div class="alert ${t}"><div>${m}</div></div>`).join('')}</div>`;
+  openModal('#modalChecklist');
+};
+$('#btnExportTxt').onclick = () => downloadBlob(new Blob([budgetText()], { type: 'text/plain;charset=utf-8' }), 'orcamento-gol-ap.txt');
+
+/* =====================================================================
+   IndexedDB: biblioteca de modelos + projetos
+   ===================================================================== */
+const DB = {
+  p: null,
+  open() { return this.p || (this.p = new Promise((res, rej) => { const r = indexedDB.open('golap-studio', 1); r.onupgradeneeded = () => { r.result.createObjectStore('models', { keyPath: 'id' }); r.result.createObjectStore('projects', { keyPath: 'id' }); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); },
+  async tx(store, mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction(store, mode), s = t.objectStore(store), r = fn(s); t.oncomplete = () => res(r && r.result); t.onerror = () => rej(t.error); }); },
+  put(st, v) { return this.tx(st, 'readwrite', s => s.put(v)); }, del(st, k) { return this.tx(st, 'readwrite', s => s.delete(k)); },
+  get(st, k) { return this.tx(st, 'readonly', s => s.get(k)); }, all(st) { return this.tx(st, 'readonly', s => s.getAll()); }
+};
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+async function saveModelToLibrary(files, name, source) {
+  const id = uid(); const recs = (await normalizeFiles(files)).map(f => ({ name: f.name, type: f.type || '', data: f.data }));
+  await DB.put('models', { id, name, source: source || null, date: Date.now(), size: recs.reduce((a, r) => a + r.data.byteLength, 0), files: recs }); return id;
+}
+const recToFiles = rec => normalizeFiles((rec.files || []).map(f => ({ name: f.name, type: f.type || '', data: f.data })));
+async function loadLibraryModel(id, adj) {
+  const rec = await DB.get('models', id); if (!rec) throw new Error('Modelo não está mais na biblioteca deste navegador.');
+  return loadModelFromFiles(await recToFiles(rec), { name: rec.name, id, source: rec.source }, adj);
+}
+async function renderLibrary() {
+  try {
+    const list = (await DB.all('models')).sort((a, b) => b.date - a.date);
+    if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(e => $('#libUsage').textContent = `${(e.usage / 1048576).toFixed(1)} MB usados`);
+    $('#libList').innerHTML = list.map(m => `<div class="glass-soft p-3 flex items-center gap-3"><i class="fa-solid fa-car-side text-sky-400"></i><div class="flex-1 min-w-0"><div class="font-semibold truncate">${escapeHTML(m.name)}</div><div class="text-[11.5px] text-slate-500">${m.files.map(f => escapeHTML(f.name)).join(', ').slice(0, 90)} · ${(m.size / 1048576).toFixed(2)} MB${m.source ? ' · ' + escapeHTML(m.source.author || 'Sketchfab') : ''}</div></div><button class="btn primary" data-libload="${m.id}">Carregar</button><button class="btn danger icon-btn" data-libdel="${m.id}"><i class="fa-solid fa-trash"></i></button></div>`).join('') || '<div class="text-slate-500 text-[13px]">Biblioteca vazia. Importe um arquivo ou baixe do Sketchfab.</div>';
+  } catch (e) { $('#libList').textContent = 'IndexedDB indisponível: ' + e.message; }
+}
+$('#libList').addEventListener('click', async e => {
+  const l = e.target.closest('[data-libload]'), d = e.target.closest('[data-libdel]');
+  if (l) { busy(true, 'Carregando da biblioteca'); try { await loadLibraryModel(l.dataset.libload); toast('Modelo carregado', 'ok'); mtab('adjust'); scheduleSave(); } catch (err) { toast(err.message, 'err'); } busy(false); }
+  if (d && confirm('Remover este modelo da biblioteca?')) { await DB.del('models', d.dataset.libdel); renderLibrary(); }
+});
+
+/* Importação (input, arrastar-e-soltar em qualquer lugar) */
+async function importFiles(files, source) {
+  files = Array.from(files || []); if (!files.length) return;
+  busy(true, 'Importando modelo', files.map(f => f.name).join(', ').slice(0, 80));
+  try {
+    files = await normalizeFiles(files); // File/Blob → {name, type, data: ArrayBuffer}
+    const name = source ? source.name : baseOf(files.find(f => /\.(dff|glb|gltf|obj)$/i.test(f.name))?.name || files[0].name);
+    let id = null; if ($('#optAutoSave').checked || source) { try { id = await saveModelToLibrary(files, name, source); } catch (e) { toast('Não foi possível salvar na biblioteca: ' + e.message, 'warn'); } }
+    const r = await loadModelFromFiles(files, { name, id, source });
+    $('#importLog').textContent = `✔ ${r.format} · ${IMP.meshes.length} malhas\n` + (r.notes || []).map(n => '• ' + n).join('\n');
+    toast(`Modelo "${escapeHTML(name)}" carregado (${r.format})`, 'ok'); openModal('#modalModels'); mtab('adjust'); scheduleSave();
+  } catch (e) { console.error(e); $('#importLog').textContent = '✖ ' + e.message; toast(escapeHTML(e.message), 'err', 6000); }
+  busy(false);
+}
+$('#fileInput').addEventListener('change', e => { importFiles(e.target.files); e.target.value = ''; });
+let dragN = 0;
+window.addEventListener('dragenter', e => { if (e.dataTransfer.types.includes('Files')) { dragN++; $('#drop').classList.add('show'); } });
+window.addEventListener('dragleave', () => { if (--dragN <= 0) { dragN = 0; $('#drop').classList.remove('show'); } });
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => {
+  e.preventDefault(); dragN = 0; $('#drop').classList.remove('show');
+  const fs = Array.from(e.dataTransfer.files || []); if (!fs.length) return;
+  if (fs.length === 1 && /\.json$/i.test(fs[0].name)) importProjectFile(fs[0]); else importFiles(fs);
+});
+$('#btnBackProcedural').onclick = () => { clearImported(); setProceduralActive(); CONFIG.model = { type: 'procedural' }; applyConfig(); scheduleSave(); toast('Gol procedural de volta ao elevador', 'ok'); };
+
+/* =====================================================================
+   Sketchfab: busca pública + download (token gratuito) direto no navegador
+   ===================================================================== */
+const SF = { next: null, inited: false };
+function sfInit() {
+  if (SF.inited) return; SF.inited = true;
+  $('#sfShortcuts').innerHTML = ['gol quadrado', 'volkswagen gol', 'vw santana', 'vw passat', 'chevrolet opala', 'fiat uno', 'gta san andreas car', 'garage'].map(q => `<button class="btn" data-sfq="${q}">${q}</button>`).join('');
+  $('#sfTokenWarn').classList.toggle('hidden', !!LS.get('golap.sftoken', ''));
+}
+async function sfSearch(url) {
+  $('#sfStatus').textContent = 'Buscando...';
+  try {
+    const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); const j = await r.json(); SF.next = j.next;
+    const html = j.results.map(m => { const th = (m.thumbnails.images.sort((a, b) => Math.abs(a.width - 400) - Math.abs(b.width - 400))[0] || {}).url || ''; return `<div class="glass-soft overflow-hidden flex flex-col"><img src="${th}" loading="lazy" class="w-full aspect-video object-cover"><div class="p-2 flex-1 flex flex-col"><div class="text-[12.5px] font-semibold line-clamp-2">${escapeHTML(m.name)}</div><div class="text-[11px] text-slate-500 mb-2">${escapeHTML(m.user.displayName || m.user.username)} · ${escapeHTML((m.license && m.license.label) || 'CC')} · ${(m.faceCount / 1000 | 0)}k tri</div><button class="btn primary mt-auto justify-center" data-sfload="${m.uid}" data-sfname="${escapeHTML(m.name)}" data-sfauthor="${escapeHTML(m.user.displayName || m.user.username)}" data-sflic="${escapeHTML((m.license && m.license.label) || '')}"><i class="fa-solid fa-download"></i>Carregar</button></div></div>`; }).join('');
+    if (url.includes('cursor=')) $('#sfGrid').insertAdjacentHTML('beforeend', html); else $('#sfGrid').innerHTML = html;
+    $('#sfStatus').textContent = j.results.length ? 'Modelos baixáveis com licença Creative Commons. Dê crédito ao autor ao publicar.' : 'Nada encontrado.';
+    $('#sfMore').classList.toggle('hidden', !SF.next);
+  } catch (e) { $('#sfStatus').textContent = 'Falha na busca: ' + e.message; }
+}
+function sfDoSearch(q) { q = q || $('#sfQuery').value.trim(); if (!q) return; $('#sfQuery').value = q; sfSearch('https://api.sketchfab.com/v3/search?type=models&downloadable=true&count=24&q=' + encodeURIComponent(q)); }
+$('#sfSearch').onclick = () => sfDoSearch(); $('#sfQuery').addEventListener('keydown', e => e.key === 'Enter' && sfDoSearch());
+$('#sfShortcuts').addEventListener('click', e => { const b = e.target.closest('[data-sfq]'); if (b) sfDoSearch(b.dataset.sfq); });
+$('#sfMore').onclick = () => SF.next && sfSearch(SF.next);
+$('#sfOpenSettings').onclick = e => { e.preventDefault(); $('#btnSettings').click(); };
+$('#sfGrid').addEventListener('click', async e => {
+  const b = e.target.closest('[data-sfload]'); if (!b) return;
+  const token = LS.get('golap.sftoken', ''); if (!token) { $('#sfTokenWarn').classList.remove('hidden'); toast('Cole seu token gratuito do Sketchfab em Configurações para baixar.', 'warn', 6000); return; }
+  busy(true, 'Baixando do Sketchfab', b.dataset.sfname);
+  try {
+    const r = await fetch(`https://api.sketchfab.com/v3/models/${b.dataset.sfload}/download`, { headers: { Authorization: 'Token ' + token } });
+    if (r.status === 401) throw new Error('Token inválido. Confira em Configurações.'); if (!r.ok) throw new Error('Download negado (HTTP ' + r.status + ')');
+    const j = await r.json(); const pick = j.glb || j.gltf; if (!pick) throw new Error('Este modelo não tem versão GLB/GLTF.');
+    const blob = await (await fetch(pick.url)).blob(); const fname = (j.glb ? 'model.glb' : 'model.zip');
+    busy(false);
+    await importFiles([new File([blob], fname)], { name: b.dataset.sfname, author: b.dataset.sfauthor, license: b.dataset.sflic, uid: b.dataset.sfload, url: 'https://sketchfab.com/3d-models/' + b.dataset.sfload });
+  } catch (err) { toast(escapeHTML(err.message), 'err', 6000); }
+  busy(false);
+});
+
+/* =====================================================================
+   Projetos: autosave, salvar/listar, exportar/importar .json, link
+   ===================================================================== */
+let saveT = null;
+function scheduleSave() { clearTimeout(saveT); saveT = setTimeout(() => LS.set('golap.autosave', JSON.stringify(CONFIG)), 400); }
+async function applyFullConfig(cfg, embeddedModel) {
+  const d = DEFAULT_CONFIG(); CONFIG = Object.assign(d, cfg, { sel: Object.assign(d.sel, cfg.sel), on: Object.assign(d.on, cfg.on), colors: Object.assign(d.colors, cfg.colors) });
+  const m = CONFIG.model || {};
+  try {
+    if (embeddedModel) { const id = await DB.put('models', embeddedModel).then(() => embeddedModel.id); await loadLibraryModel(id, m.adj); }
+    else if (m.type === 'library' && m.id) await loadLibraryModel(m.id, m.adj);
+    else if (IMP.orient) { clearImported(); setProceduralActive(); CONFIG.model = { type: 'procedural' }; }
+  } catch (e) { toast('Modelo do projeto indisponível: ' + escapeHTML(e.message) + ' — usando o Gol procedural.', 'warn', 6000); clearImported(); setProceduralActive(); CONFIG.model = { type: 'procedural' }; }
+  applyConfig(); renderTab(); refreshStats(); scheduleSave();
+}
+async function renderProjects() {
+  const list = (await DB.all('projects').catch(() => [])).sort((a, b) => b.date - a.date);
+  $('#projList').innerHTML = list.map(p => `<div class="glass-soft p-3 flex items-center gap-3"><div class="flex-1 min-w-0"><div class="font-semibold truncate">${escapeHTML(p.name)}</div><div class="text-[11.5px] text-slate-500">${new Date(p.date).toLocaleString('pt-BR')} · ${escapeHTML(p.config.model && p.config.model.name || 'Gol procedural')}</div></div><button class="btn primary" data-pload="${p.id}">Abrir</button><button class="btn danger icon-btn" data-pdel="${p.id}"><i class="fa-solid fa-trash"></i></button></div>`).join('') || '<div class="text-slate-500 text-[13px]">Nenhum projeto salvo ainda.</div>';
+}
+$('#projSave').onclick = async () => { const name = $('#projName').value.trim() || 'Projeto ' + new Date().toLocaleString('pt-BR'); await DB.put('projects', { id: uid(), name, date: Date.now(), config: JSON.parse(JSON.stringify(CONFIG)) }); $('#projName').value = ''; renderProjects(); toast('Projeto salvo', 'ok'); };
+$('#projList').addEventListener('click', async e => {
+  const l = e.target.closest('[data-pload]'), d = e.target.closest('[data-pdel]');
+  if (l) { const p = await DB.get('projects', l.dataset.pload); busy(true, 'Abrindo projeto'); await applyFullConfig(p.config); busy(false); toast('Projeto "' + escapeHTML(p.name) + '" aberto', 'ok'); }
+  if (d && confirm('Excluir este projeto?')) { await DB.del('projects', d.dataset.pdel); renderProjects(); }
+});
+const ab2b64 = ab => { let s = '', u = new Uint8Array(ab); for (let i = 0; i < u.length; i += 32768) s += String.fromCharCode.apply(null, u.subarray(i, i + 32768)); return btoa(s); };
+const b642ab = b => { const s = atob(b), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; };
+$('#projExport').onclick = async () => {
+  const out = { app: 'gol-ap-studio', v: 1, date: new Date().toISOString(), config: CONFIG };
+  if (CONFIG.model.type === 'library' && CONFIG.model.id) { const rec = await DB.get('models', CONFIG.model.id); if (rec) out.model = Object.assign({}, rec, { files: rec.files.map(f => ({ name: f.name, type: f.type, b64: ab2b64(f.data) })) }); }
+  downloadBlob(new Blob([JSON.stringify(out)], { type: 'application/json' }), 'projeto-gol-ap.json');
+};
+async function importProjectFile(f) {
+  busy(true, 'Importando projeto');
+  try { const j = JSON.parse(await f.text()); if (!j.config) throw new Error('Arquivo não é um projeto do Gol AP Studio.');
+    const em = j.model ? Object.assign({}, j.model, { files: j.model.files.map(x => ({ name: x.name, type: x.type, data: b642ab(x.b64) })) }) : null;
+    await applyFullConfig(j.config, em); toast('Projeto importado', 'ok');
+  } catch (e) { toast(escapeHTML(e.message), 'err'); }
+  busy(false);
+}
+$('#projImportFile').addEventListener('change', e => { if (e.target.files[0]) importProjectFile(e.target.files[0]); e.target.value = ''; });
+$('#projShare').onclick = () => {
+  const c = Object.assign({}, CONFIG, { model: { type: 'procedural' } }); const url = location.origin + location.pathname + '#cfg=' + btoa(unescape(encodeURIComponent(JSON.stringify(c))));
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast('Link copiado (peças, cores e mão de obra)', 'ok'), () => prompt('Copie o link:', url));
+};
+$('#projReset').onclick = () => { if (confirm('Voltar à configuração de fábrica?')) applyFullConfig(DEFAULT_CONFIG()); };
+
+/* Configurações */
+$('#setTokenShow').onclick = () => { const i = $('#setToken'); i.type = i.type === 'password' ? 'text' : 'password'; };
+$('#setVolume').addEventListener('input', e => { AUD.vol = e.target.value / 100; if (AUD.on) AUD.gain.gain.setTargetAtTime(0.12 * AUD.vol, AUD.ctx.currentTime, 0.1); });
+$('#setSave').onclick = () => {
+  LS.set('golap.sftoken', $('#setToken').value.trim()); LS.set('golap.vol', Math.round(AUD.vol * 100));
+  $('#sfTokenWarn').classList.toggle('hidden', !!$('#setToken').value.trim());
+  const q = $('#setQuality').value, changed = q !== LS.get('golap.quality', 'auto'); LS.set('golap.quality', q);
+  $('#modalSettings').classList.remove('show'); toast('Configurações salvas', 'ok');
+  if (changed) setTimeout(() => location.reload(), 600);
+};
+
+/* =====================================================================
+   Loop de animação
+   ===================================================================== */
+const clock = new THREE.Clock();
+function draw() { composer ? composer.render() : renderer.render(scene, camera); }
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.05), k = 1 - Math.exp(-dt * 6);
+  if (camGoal) { camera.position.lerp(camGoal.p, k); controls.target.lerp(camGoal.t, k); if (camera.position.distanceTo(camGoal.p) < 0.01) camGoal = null; }
+  CAR.hood.angle += (CAR.hood.target - CAR.hood.angle) * k;
+  if (CAR.hood.pivot) CAR.hood.pivot.rotation.x = CAR.hood.angle;
+  if (IMP.orient) updateImportedHood(CAR.hood.angle);
+  CAR.bodyY += (CAR.bodyTargetY - CAR.bodyY) * k; CAR.body.position.y = CAR.bodyY;
+  liftY += (liftTarget - liftY) * k * 0.6; CAR.root.position.y = liftY;
+  LIFT.carriages.forEach(a => { if (a.userData.baseY === undefined) a.userData.baseY = a.position.y; a.position.y = a.userData.baseY + liftY; });
+  AUD.rpm += (AUD.target - AUD.rpm) * Math.min(1, dt * 4);
+  $('#rpmVal').textContent = Math.round(AUD.rpm); $('#rpmBar').style.width = clamp(AUD.rpm / 7000 * 100, 0, 100) + '%';
+  if (AUD.on && CAR.parts.engineBlock) CAR.parts.engineBlock.position.x = Math.sin(performance.now() / 18) * 0.0015;
+  controls.update(); draw();
+}
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight, false);
+  composer && composer.setSize(innerWidth, innerHeight); refreshStats();
+});
+
+/* Boot: link compartilhado > autosave > fábrica */
+(async function boot() {
+  let cfg = null;
+  try { const h = location.hash.match(/cfg=([^&]+)/); if (h) cfg = JSON.parse(decodeURIComponent(escape(atob(h[1])))); } catch (e) {}
+  if (!cfg) try { cfg = JSON.parse(LS.get('golap.autosave', 'null')); } catch (e) {}
+  renderTab(); refreshStats(); tick();
+  if (cfg) await applyFullConfig(cfg);
+  window.__GOLAP__ = { getState: () => ({ quality: QUALITY, config: CONFIG, stats: computeStats(), imported: !!IMP.orient }), errors: ERRORS, renderInfo: () => renderer.info.render };
+})();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
